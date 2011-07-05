@@ -1,0 +1,10 @@
+import(IRanges)
+importFrom("graphics", "plot", "lines")
+importFrom("MASS", "isoMDS")
+importFrom("BSgenome", "available.genomes")
+importFrom("GenomicRanges", "seqlengths")
+
+exportMethods(alignPeaks, extendRanges, filterDuplReads, mergeRegions, enrichedRegions, enrichedPeaks, stdPeakLocation, PeakLocation, listOverlap, tabDuplReads, cmds, cmdsFit, islandCounts, ssdCoverage, giniCoverage, regionsCoverage, stdGrid, plot, lines, enrichedChrRegions, countHitsWindow)
+export(fdrEnrichedCounts, gridCoverage, plotChrRegions, coverageDiff, rowLogRegLRT)
+
+exportClasses("cmdsFit","gridCover")

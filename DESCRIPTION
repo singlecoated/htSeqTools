@@ -1,0 +1,13 @@
+Package: htSeqTools 
+Version: 0.99.1
+Date: 2011-04-06
+Title: Quality Control, Visualization and Processing for High-Throughput Sequencing data 
+Author: Evarist Planet, Camille Stephan-Otto, Oscar Reina, Oscar Flores, David Rossell
+Maintainer: Oscar Reina <oscar.reina@irbbarcelona.org>
+Depends: R (>= 2.12.2), Biobase, IRanges, methods, MASS, BSgenome, GenomicRanges
+Enhances: multicore
+Description: We provide efficient, easy-to-use tools for High-Throughput Sequencing (ChIP-seq, RNAseq etc.). These include MDS plots (analogues to PCA), detecting inefficient immuno-precipitation or over-amplification artifacts, tools to identify and test for genomic regions with large accumulation of reads, and visualization of coverage profiles.
+License: GPL (>=2)
+LazyLoad: yes 
+Collate: ClassDefinitions.R GenericDefs.R alignPeaks.R extendRanges.R filterDuplReads.R mergeRegions.R stdPeakLocation.R rowLogRegLRT.R enrichedRegions.R enrichedPeaks.R listOverlap.R tabDuplReads.R cmdsFit-class.R cmds.R fdrEnrichedCounts.R islandCounts.R countRepeats.R ssdCoverage.R giniCoverage.R regionsCoverage.R gridCover-methods.R enrichedChrRegions.R plotChrRegions.R coverageDiff.R
+biocViews: HighThroughputSequencing,QualityControl

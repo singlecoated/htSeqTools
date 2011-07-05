@@ -1,0 +1,685 @@
+\documentclass[a4paper,12pt]{article}
+%\VignetteIndexEntry{Manual for the htSeqTools library}
+%\VignettePackage{htSeqTools}
+
+
+
+\usepackage{amsmath}    % need for subequations
+\usepackage{amssymb}    %useful mathematical symbols
+\usepackage{bm}         %needed for bold greek letters and math symbols
+\usepackage{graphicx}   % need for PS figures
+%\usepackage{verbatim}   % useful for program listings
+%\usepackage{color}      % use if color is used in text
+\usepackage{hyperref}   % use for hypertext links, including those to external documents and URLs
+\usepackage{natbib}    %number and author-year style referencing
+%\usepackage{epsf} 
+%\usepackage{lscape} 
+%\bibpunct{(}{)}{;}{a}{,}{,}
+
+
+
+\pagestyle{empty} % use if page numbers not wanted
+
+\begin{document}
+
+\title{\texttt{htSeqTools}: quality control, visualization and processing high-throughput sequencing data}
+\small
+\author{Evarist Planet \footnote{Bioinformatics \& Biostatistics Unit, IRB Barcelona}, 
+  Camille Stephan-Otto \footnotemark[1], Oscar Reina \footnotemark[1], \\
+  Oscar Flores \footnote{IRB-BSC Joint Research Program on Computational Biology, IRB Barcelona},
+  David Rossell \footnotemark[1]}
+\normalsize
+\date{}  %comment to include current date
+
+\maketitle
+
+
+\section{Introduction}
+\label{sec:intro}
+
+The \texttt{htSeqTools} package provides an easy-to-use toolset 
+to efficiently perform a variety of tasks with high-throughput
+sequencing data. 
+Although relatively simple-minded, we found the tools to be
+extremely helpful in quality control assessment,
+routine pre-processing and analysis steps
+and in producing useful visualizations.
+
+Emphasis is placed on ChIP-Seq alike experiments,
+but many functions are also useful for other kinds of sequencing experiments.
+
+Many routines allow performing computations in parallel 
+by specifying an argument \texttt{mc.cores}, which uses
+package \texttt{multicore}.
+As this package is not available in all platforms,
+in this manual we do not use parallel computing.
+Please see the help page for each function for more details.
+
+We start by loading the package and a ChIP-Seq dataset
+which we will use for illustration purposes.
+
+\footnotesize
+<<import1>>=
+options(width=70)
+library(htSeqTools)
+data(htSample)
+htSample
+sapply(htSample,nrow)
+@ 
+\normalsize
+
+\texttt{htSample} is a \texttt{RangedDataList} object storing the chromosome, start and end
+positions for reads mapped to the first 500kb of the drosophila melanogaster chromosome 2L.
+\texttt{htSample} contains 2 immuno-precipitated and 2 control input samples
+obtained in two separate Illumina sequencing runs, which we named Batch1 and Batch2.
+The standard Illumina pipeline was used for pre-processing the data.
+Following the Bowtie defaults,
+only uniquely mapping reads with at most 2 mismatches in the first 28 bases were kept.
+We do not give any further details about the experiment, as the results
+have not yet been published.
+
+\section{Quality control}
+\label{sec:quality_control}
+
+\subsection{A PCA analogue for sequencing data}
+\label{ssec:mds}
+
+PCA is a commonly used technique to assess overall quality and identify problematic
+samples in high-throughput experiments.
+PCA requires to define a common set of entities (e.g. genes)
+for all samples and obtain some numerical measurement for each entity
+in each sample (e.g. gene expression).
+Therefore, unfortunately PCA is not directly applicable to sequencing data.
+One option is to pre-process the data so that PCA
+can be applied, e.g. computing the number of reads falling in some
+pre-defined genomic regions.
+The inconvenient of this approach is its lack of generality, since
+different kinds of sequencing data generally require different pre-processing.
+For instance, while in RNA-Seq we can obtain a PCA based on RPKM expression
+measures \citep{mortazavi:2008},
+this same strategy is not adequate for ChIP-Seq data
+where many reads may be mapped to promoter or inter-genic regions.
+
+Instead, we propose 
+comparing the read coverage across samples and
+using Multi-Dimensional Scaling (MDS) to obtain a low-dimensional
+visual representation.
+Read coverage is a universal measure which can be computed
+efficiently for any type of sequencing data.
+We measure similarity between samples $i$ and $j$ with $\rho_{ij}$,
+the Pearson correlation between their log-coverages,
+and define their distance as $d_{ij}= 0.5 (1-\rho_{ij})$.
+We compute correlations in the log-scale to take into
+account that the coverage distribution is typically highly asymmetric.
+MDS is then used to plot the samples in a low-dimensional space,
+in a way such that the Euclidean distance between two points is closest
+to the Pearson distances.
+Our approach is implemented in a \texttt{cmds} method for \texttt{RangedDataList} objects.
+We illustrate its use by obtaining a two-dimensional MDS
+for our sample data.
+
+\footnotesize
+
+<<getmds>>=
+cmds1 <- cmds(htSample,k=2)
+cmds1
+@ 
+
+\normalsize
+
+The R$^2$ coefficient between the original distances and their approximation in the
+plot 
+can be seen as an analogue to the percentage of explained variability in a PCA analysis.
+For our sample data R$^2$=1 (up to rounding), 
+which indicates a perfect fit and that therefore a 3-dimensional plot is not necessary.
+
+\footnotesize
+
+<<label=figmds>>=
+plot(cmds1)
+@ 
+
+\normalsize
+
+Figure \ref{fig:mds} shows the resulting plot.
+The IP samples from both runs group nicely, indicating that they
+have similar coverage profiles. The control samples also group
+reasonably well, although they present more differences than the IP samples.
+This is to be expected, since the IP samples focus on a relatively small genomic regions.
+The MDS plot also reveals a minor batch effect, as samples from the same batch appear slightly
+closer in the map.
+
+\setkeys{Gin}{width=0.7\textwidth} 
+\begin{figure}
+\begin{center}
+<<label=figmds,fig=TRUE,echo=FALSE>>=
+<<figmds>>
+@
+\end{center}
+\caption{2-dimensional MDS plot. Samples with similar coverage appear close-by}
+\label{fig:mds}
+\end{figure}
+
+\subsection{Exploring coverage uniformity}
+\label{ssec:coverunif}
+
+In some next-generation sequencing experiments we expect some samples to exhibit
+large accumulations of reads in certain genomic regions,
+whereas other samples should present a more uniform coverage
+along the genome.
+For instance, in ChIP-seq one should observe higher peaks for immuno-precipitated (IP) samples 
+than in the controls.
+That is, IP samples should present coverage rich and coverage poor regions,
+whereas differences in coverage in the controls should be smaller.
+
+In these cases we propose to measure the unevennes in the coverage using either the
+coverage standard deviation or Gini's coefficient \citep{gini:1912},
+which is a classical econometrics measure to assess unevennes of wealth distribution.
+Comparing these statistical dispersion measures between samples can reveal
+samples with innefficient immuno-precipitation (e.g. due to an inadequate antibody).
+Both measures can be easily obtained
+ with the functions \texttt{ssdCoverage} and \texttt{giniCoverage}.
+Simple algebra shows that the expected value of the coverage standard deviation is
+proportional to $\sqrt{n}$, where $n$ is the number of reads.
+Therefore \texttt{ssdCoverage} reports $\mbox{SD}_n=\mbox{SD}/\sqrt{n}$
+as a measure that can be compared across samples with different number of reads.
+Similarly, simulations show that the expected Gini also depends on $n$.
+Since no closed-form expression is available,
+we estimate its expected value by generating $n$ reads uniformly distributed along the genome
+and computing the Gini coefficient.
+The adjusted Gini ($G_n$) is the difference between the observed Gini ($G$) minus 
+its estimated expected value $\hat{\mbox{E}}(G|n)$.
+
+
+\footnotesize
+
+<<qcontrol1>>=
+ssdCoverage(htSample)
+giniCoverage(htSample,mc.cores=1)
+@ 
+
+\normalsize
+
+The coverage exhibits higher  dispersion in the IP samples
+than in the controls, which indicates there were no substantial problems
+in the immuno-precipitation.
+The function \texttt{giniCoverage} allows to graphically assess
+the non-uniformity in the coverage distribution 
+by plotting the probability and cumulative probability function.
+The top panels in Figure \ref{fig:gini} show the log probability mass function
+of the coverage, and the bottom panels show the Lorenz curve
+(\cite{gastwirth:1972}, see \texttt{Lc} from package \texttt{ineq} for details).
+We observe a more pronounced non-uniformity in the IP sample.
+
+\footnotesize
+
+<<label=figgini1,include=FALSE,results=hide>>=
+giniCoverage(htSample[['ctrlBatch2']],mc.cores=1,mk.plot=TRUE)
+@
+
+<<label=figgini2,include=FALSE,results=hide>>=
+giniCoverage(htSample[['ipBatch2']],mc.cores=1,mk.plot=TRUE)
+@
+
+\normalsize
+
+\setkeys{Gin}{width=0.5\textwidth} 
+\begin{figure}
+\begin{center}
+\begin{tabular}{cc}
+<<label=figgini1,fig=TRUE,echo=FALSE,results=hide>>=
+<<figgini1>>
+@ &
+<<label=figgini2,fig=TRUE,echo=FALSE,results=hide>>=
+<<figgini2>>
+@
+\end{tabular}
+\end{center}
+\caption{Lorenz curves to assess coverage uniformity. Left: control; Right: immuno-precipitated sample}
+\label{fig:gini}
+\end{figure}
+
+\subsection{Detecting over-amplification artifacts}
+\label{ssec:overamp}
+
+High-throughput sequencing requires a PCR amplification step to enrich for adapter-ligated
+fragments. This step can induce biases as some DNA regions amplify more efficiently than
+others (e.g. depending on GC content).
+These PCR artifacts, caused by over-amplification or primer dimers,
+affect the accuracy of the coverage and can create biases in the downstream analyses.
+The function \texttt{filterDupReads} aims to automatically detect and remove
+these artifacts.
+The basic rationale is that, by counting the number of times that each read is repeated,
+we can detect the reads repeating an unusually large number of times.
+The argument \texttt{maxRepeats} can be used to eliminate all reads appearing more
+than this user-specified threshold.
+However, notice that ideally this threshold 
+should be determined for each sample separately,
+as the expected number of naturally occurring repeats depends on the sequencing depth,
+and may also depend on the characteristics of each sample.
+For instance, sequences from
+IP samples focus on a relatively small 
+genomic region while those from controls are distributed along most of the genome,
+and therefore we expect a higher number of repeats in IP samples.
+When specifying the argument \texttt{fdrOverAmp},
+\texttt{filterDuplReads} determines the threshold in a data-adaptive manner.
+
+Although this filtering can be performed with a single call to \texttt{filterDuplReads},
+we now illustrate its inner workings in a step-by-step fashion. 
+We add 200 repeats of an artificial sequence to sample \texttt{"ctrlBatch1"},
+and count the number of times that each sequence appears with 
+the function \texttt{tabDuplReads}.
+
+\footnotesize
+
+<<qcontrol2>>=
+contamSample <- RangedData(IRanges(rep(1,200),rep(36,200)),space=rep('chr2L',200),strand='+')
+contamSample <- rbind(htSample[['ctrlBatch1']],contamSample)
+nrepeats <- tabDuplReads(contamSample)
+nrepeats
+@ 
+
+\normalsize
+
+There are 11812 sequences appearing only once, 10112 appearing twice etc.
+The function \texttt{fdrEnrichedCounts} (called by \texttt{filterDuplReads})
+determines the over-amplification threshold in a data-adaptive manner.
+Basically, it assumes that only large number of repeats are artifacts
+and models the reads with few repeats with a truncated negative binomial mixture
+(fit via Maximum Likelihood),
+which we observed to fit experimental data reasonably well.
+The number of components to be used is chosen in parameter
+\texttt{components}.
+If this parameter has value 0 the optimal number of components is
+selected using the Bayesian information criterion (BIC).
+Here we used one component for computational speed.
+An empirical Bayes approach similar to that in \cite{efron:2001}
+is then used to estimate the FDR
+associated with a given cutoff
+(see \texttt{help(fdrEnrichedCounts)} for details).
+
+\footnotesize
+
+<<qcontrol3>>=
+q <- which(cumsum(nrepeats/sum(nrepeats))>.999)[1]
+q
+fdrest <- fdrEnrichedCounts(nrepeats, use=1:q, components=1)
+@ 
+
+\normalsize
+
+Here we assumed that less than 1/1000 reads are artifacts
+and fit a negative binomial truncated at
+$\left[ 1,14 \right]$.
+Notice that, although here we used \texttt{fdrEnrichedCounts} to detect over-amplification,
+it can also be used in any other setup when one whishes to detect large counts.
+In Figure \ref{fig:filterDuplReads} we produce a plot showing the estimated FDR for a series of cutoffs.
+The argument \texttt{fdrOverAmp} to \texttt{filterDuplReads}
+indicates the FDR cutoff to determine over-amplification.
+We also show the distribution of the observed number of repeats
+(blue)
+and its truncated negative binomial approximation in $\left[ 1,14 \right]$ (red).
+Notice that any sequence repeating over 40 times
+(including our artificial sequence repeating 200 times)
+is regarded
+as an artifact.
+
+\footnotesize
+
+<<label=figrepeats1,include=FALSE>>=
+plot(fdrest$fdrEnriched,type='l',ylab='',xlab='Number of repeats (r)')
+lines(fdrest$pdfOverall,col=4)
+lines(fdrest$pdfH0,col=2,lty=2)
+legend('topright',c('FDR','P(r | no artifact)','P(r)'),lty=c(1,2,1),col=c(1,2,4))
+@ 
+
+\normalsize
+
+\setkeys{Gin}{width=0.5\textwidth} 
+\begin{figure}
+\begin{center}
+<<label=figrepeats1,fig=TRUE,echo=FALSE>>=
+<<figrepeats1>>
+@ 
+\end{center}
+\caption{Black line: 
+  estimated FDR for each number of repeats cutoff.
+Red line: distribution of the number of repeats
+as estimated by a truncated negative binomial with 2 components
+(representing not over-amplified reads).
+Blue line: distribution of the number of repeats in the observed data.}
+\label{fig:filterDuplReads}
+\end{figure}
+
+
+\section{Data pre-processing}
+\label{sec:preprocess}
+
+We discuss several tools which can be useful for ChIP-seq data preprocessing.
+In these studies there typically is a strand-specific bias:
+reads coming from the + strand pile up to the left of reads from the - strand.
+Removing this bias is important, as it provides a highly increased accuraccy
+for peak detection.
+\texttt{alignPeaks} implements a procedure to correct this bias,
+which is fairly similar to the MACS procedure \citep{zhang:2008}.
+A nice alternative is provided in function \texttt{estimate.mean.fraglen}
+from package \texttt{chipseq}.
+To illustrate the need for the adjustment
+we plot the coverage in a certain genomic region before the adjustment
+(displayed in Figure \ref{fig:preprocess1}, left panel).
+
+\footnotesize
+
+<<label=figpreprocess1,include=FALSE>>=
+covbefore <- coverage(htSample[['ipBatch2']])
+covbefore <- seqselect(covbefore[['chr2L']],295108,297413)
+plot(as.integer(covbefore),type='l',ylab='Coverage')
+@
+
+\normalsize
+
+Now we perform the adjustment with \texttt{alignPeaks} and plot the resulting
+coverage as the solid black line in Figure \ref{fig:preprocess1} (right panel).
+In blue and red color we display the coverage computed separately from
+reads on the + and - strands, respectively.
+The blue and red lines present a similar profile, but they are shifted.
+Exploring other peaks reveals similar patterns.
+Removing this strand specific bias results in sharper peaks and prevents detecting
+two separate peaks when there should actually be one,
+as illustrated by the left-most peak in Figure \ref{fig:preprocess1}.
+
+\footnotesize
+
+<<preprocess1>>=
+ip2Aligned <- alignPeaks(htSample[['ipBatch2']],strand='strand', npeaks=100)
+covafter <- coverage(ip2Aligned)
+covafter <- seqselect(covafter[['chr2L']],295108,297413)
+covplus <- coverage(htSample[['ipBatch2']][htSample[['ipBatch2']][['strand']]=='+',])
+covplus <- seqselect(covplus[['chr2L']],295108,297413)
+covminus <- coverage(htSample[['ipBatch2']][htSample[['ipBatch2']][['strand']]=='-',])
+covminus <- seqselect(covminus[['chr2L']],295108,297413)
+@
+
+<<label=figpreprocess2,include=FALSE>>=
+plot(as.integer(covafter),type='l',ylab='Coverage')
+lines(as.integer(covplus),col='blue',lty=2)
+lines(as.integer(covminus),col='red',lty=2)
+@
+
+\normalsize
+
+\setkeys{Gin}{width=0.5\textwidth} 
+\begin{figure}
+\begin{center}
+\begin{tabular}{cc}
+<<label=figpreprocess1,fig=TRUE,echo=FALSE>>=
+<<figpreprocess1>>
+@ &
+<<label=figpreprocess2,fig=TRUE,echo=FALSE>>=
+<<figpreprocess2>>
+@ 
+\end{tabular}
+\end{center}
+\caption{Coverage for gene p38b. Left: Before adjustment; Right: After adjustment.
+Blue line: + strand; Red line: - strand; 
+Black line: global estimate after peak alignment by \texttt{alignPeaks}.}
+\label{fig:preprocess1}
+\end{figure}
+
+In ChIP-seq experiments, it is sometimes convenient to extend the reads to take into
+account that we only sequenced the first few bases (typically 40-100 bp)
+from a larger DNA fragment (typically around 300bp).
+In practice, this achieves some smoothing of the read coverage.
+\texttt{extendRanges} extends the reads up to a user-specified length.
+
+
+\section{Basic data analysis}
+\label{sec:analysis}
+
+Finding genomic regions with large accumulation of reads is an important task
+in many sequencing experiments, including ChIP-Seq and RNA-Seq.
+\texttt{islandCounts} performs a
+simple analysis using tools provided in the \texttt{IRanges} package.
+We search for genomic regions with an overall coverage $\geq 10$ (i.e. across all samples),
+and obtain the number of reads in each sample overlapping with these regions.
+
+\footnotesize
+
+<<islandCounts>>=
+ip <- rbind(htSample[[2]],htSample[[4]])
+ctrl <- rbind(htSample[[1]],htSample[[3]])
+pool <- RangedDataList(ip=ctrl, ctrl=ctrl)
+counts <- islandCounts(pool,minReads=10)
+head(counts)
+@ 
+
+\normalsize
+
+There are a number of analysis strategies to compare these counts between groups.
+For instance for short RNA sequencing data we could compare expression levels
+across groups using the tools in package \texttt{DEseq}.
+Here we show a simple analysis based on likelihood-ratio tests
+with the function \texttt{enrichedRegions}.
+
+\footnotesize
+
+<<enrichedRegions>>=
+regions <- enrichedRegions(sample1=ip,sample2=ctrl,minReads=10,p.adjust.method='BY',pvalFilter=.05,twoTailed=FALSE)
+head(regions)
+nrow(regions)
+@ 
+
+\normalsize
+
+The argument \texttt{twoTailed=FALSE} indicates that only regions 
+with a significantly higher number of reads in \texttt{sample1} than in \texttt{sample2} are reported.
+Regions with overall coverage $\geq$10 
+are selected, and a likelihood-ratio test is used to compare the proportion of reads
+in \texttt{sample1} falling in a given region with the proportion in \texttt{sample2}.
+When setting \texttt{exact} to \texttt{TRUE}, a permutation-based Chi-square test is used
+whenever the expected counts in any group is below 5.
+Here we reported only regions with Benjamini-Yekutielli adjusted p-values below 0.05.
+
+\texttt{enrichedRegions} can also be used with no control sample,
+in which case it looks for islands with a significant accumulation of reads
+with an exact Binomial test.
+The null hypothesis assumes that a read is equally likely to come
+from any of the selected regions.
+
+A related function is \texttt{enrichedPeaks},
+which can be used to find peaks within the enriched regions.
+Peaks are defined as enriched regions where the difference in coverage 
+between \texttt{sample1} and \texttt{sample2} is above a user-specified threshold.
+In this example we use \texttt{minHeight=100}.
+
+\footnotesize
+
+<<enrichedPeaks>>=
+peaks <- enrichedPeaks(regions, sample1=ip, sample2=ctrl, minHeight=100)
+peaks
+@
+
+\normalsize
+
+It is possible to merge nearby regions, e.g. say no more than 300bp apart, into a single
+region with the function \texttt{mergeRegions}.
+\texttt{mergeRegions} allows to combine a numerical score across regions with any user-defined
+function, e.g. the mean or median.
+In the following example we merge regions less than 300bp apart and compute their median
+\texttt{'height'}.
+
+\footnotesize
+
+<<mergeRegions>>=
+mergeRegions(peaks, maxDist=300, score='height', aggregateFUN='median')
+@
+
+\normalsize
+
+A common task is to 
+identify genomic features close to the identified regions/peaks,
+e.g. finding the closest gene. This can be performed with the function \texttt{annotatePeakInBatch}
+from package \texttt{ChIPpeakAnno}, for instance.
+Sometimes it is of interest to compare the list of genes which had a nearby peak with
+the genes found in another experiment.
+The function \texttt{listOverlap} quantifies the overlap and tests for its statistical significance.
+
+Another analysis which may be of interest is locating hot chromosomal regions,
+i.e., regions in the chromosome with a large number of peaks.
+The function \texttt{enrichedChrRegions} can be used for this purpose.
+First we need to define a named vector indicating the chromosome lengths.
+Since our example data only contains reads aligning to the first 500,000 bases of 
+chr2L, we manually its length.
+More generally, one can determine the chromosome lengths from Bioconductor packages
+(e.g. for drosophila melanogaster load \texttt{BSgenome.Dmelanogaster.UCSC.dm3} 
+and evaluate \texttt{seqlengths(Dmelanogaster)}, and similarly for other organisms).
+We run the function setting a window size of 9999 base pairs
+and a 0.05 false discovery rate level. 
+For computational speed here we only use \texttt{nSims=1} simulations to estimate the FDR.
+
+\footnotesize
+
+<<analysis2>>=
+chrLength <- 500000
+names(chrLength) <- c('chr2L')
+chrregions <- enrichedChrRegions(peaks, chrLength=chrLength, windowSize=10^4-1, fdr=0.05, nSims=1)
+chrregions[['chr2L']]
+@ 
+
+\normalsize
+
+\texttt{enrichedChrRegions} returns a \texttt{RangedData} 
+which for our sample data is empty, suggesting that there is no region with
+an unusually high density of enriched regions.
+Two related functions are \texttt{countHitsWindow} which computes the moving average of the
+number of hits, and \texttt{plotChrRegions} to visualize the results.
+For illustrative purposes we make up two regions with high density of enriched peaks
+and plot them.
+
+\footnotesize
+
+<<label=figanalysis2,include=FALSE>>=
+chrregions <- RangedData(ranges=IRanges(start=c(100000,200000),end=c(100100,210000)),space=c('chr2L','chr2R'))
+plotChrRegions(regions=chrregions, chrLength=c(chr2L=500000,chr2R=500000))
+@ 
+
+\normalsize
+
+\setkeys{Gin}{width=0.5\textwidth} 
+\begin{figure}
+\begin{center}
+<<label=figanalysis2,fig=TRUE,echo=FALSE>>=
+<<figanalysis2>>
+@
+\end{center}
+\caption{Chromosomal regions with a large number of hits. Red marks indicate regions with high concentration of peaks.}
+\label{fig:analysis2}
+\end{figure}
+
+
+\section{Plots}
+\label{sec:plots}
+
+\texttt{stdPeakLocation} and \texttt{PeakLocation} produce a plot useful for exploring overall patterns in ChIP-chip or ChIP-seq
+experiments. Basically, it creates a density plot indicating where the peaks were located with respect to
+the closest gene/genomic feature. 
+\texttt{stdPeakLocation} indicates the location in standardized coordinates, 
+i.e. relative to each gene/features's length,
+which in some situations can help making genes/features comparable.
+\texttt{PeakLocation} produces the same plot in base pairs (i.e. non-standardized coordinates),
+which is useful as distances have a direct physical interpretation, 
+e.g. to relate the peak location with nucleosome positioning.
+As mentioned earlier, function \texttt{annotatePeakInBatch}
+from package \texttt{ChIPpeakAnno} can be used to find the gene closest to each
+region.
+For illustrative purposes here we assign a fake gene to each region.
+The fake genes start, end, strand and distance from the start to the region
+by default are assumed to be stored in 
+\texttt{'start\_position'}, \texttt{'end\_position'}, \texttt{'strand'}
+and \texttt{'distance'}, respectively
+(although different names can be given as arguments to \texttt{PeakLocation}
+and \texttt{stdPeakLocation}). 
+
+\footnotesize
+
+<<label=figplots1,include=FALSE>>=
+peaksanno <- peaks
+peaksanno[['start_position']] <- start(peaksanno) + runif(nrow(peaksanno),-500,1000)
+peaksanno[['end_position']] <- peaksanno[['start_position']] + 500
+peaksanno[['distance']] <- peaksanno[['start_position']] - start(peaksanno)
+peaksanno[['strand']] <- sample(c('+','-'),nrow(peaksanno),replace=TRUE)
+PeakLocation(peaksanno,peakDistance=1000)
+@ 
+
+\normalsize
+
+Figure \ref{fig:plots1} shows the resulting plot.
+We see that most of the peaks occur right around the transcription start site.
+
+\setkeys{Gin}{width=0.5\textwidth} 
+\begin{figure}
+\begin{center}
+<<label=figplots1,fig=TRUE,echo=FALSE>>=
+<<figplots1>>
+@ 
+\end{center}
+\caption{Distribution of peaks around the closest gene}
+\label{fig:plots1}
+\end{figure}
+
+Two related functions are \texttt{regionsCoverage} and \texttt{gridCoverage}, which evaluate the
+coverage on user-specified genomic regions. 
+We illustrate their use by obtaining the coverage for the regions
+which we found to be enriched (as previously described).
+\texttt{regionsCoverage} computes the coverage in the specified regions.
+As each region has a different length it may be hard to compare coverages across regions,
+e.g. to cluster regions with similar coverage profiles.
+\texttt{gridCoverage} simplifies this task by evaluating the coverage on a regular grid
+of 500 equally spaced points between the region start and end.
+The result is stored in an object of class \texttt{gridCover},
+which contains the coverage in the slot \texttt{cover}
+and some summary information about each region in \texttt{viewsInfo}.
+
+\footnotesize
+
+<<regionscov>>=
+cover <- coverage(ip)
+rcov <- regionsCoverage(space(regions),start(regions),end(regions),cover=cover)
+names(rcov)
+rcov[['views']]
+gridcov <- gridCoverage(rcov)
+dim(gridcov@cover)
+gridcov@viewsInfo
+@ 
+
+
+\normalsize
+
+We plot the coverage for the selected regions and see that they present different profiles Figure \ref{fig:plots2},
+which suggests the use of some clustering technique to find subgroups of regions behaving similarly.
+
+\footnotesize
+
+<<label=figregCoverage,include=FALSE>>=
+ylim <- c(0,max(gridcov@viewsInfo[['maxCov']]))
+plot(gridcov, ylim=ylim,lwd=2)
+for (i in 1:nrow(regions)) lines(gridcov@cover[i,], col='gray', lty=2)
+@ 
+
+\normalsize
+
+\setkeys{Gin}{width=0.5\textwidth} 
+\begin{figure}
+\begin{center}
+<<label=figregCoverage,fig=TRUE,echo=FALSE>>=
+<<figregCoverage>>
+@ 
+\end{center}
+\caption{Coverage for some selected regions}
+\label{fig:plots2}
+\end{figure}
+
+\bibliographystyle{plainnat}
+\bibliography{references} 
+
+\end{document}

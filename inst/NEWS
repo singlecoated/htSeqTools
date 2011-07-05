@@ -1,0 +1,116 @@
+VERSION 0.99
+- Adapted enrichedChrRegions to adapt to change in IRanges behavior
+- Fixed bug in PeakLocation and stdPeakLocation when strand information was stored in variables of type factor
+- Included adjustments for number of reads in each sample for giniCoverage and ssdCoverage
+- Improved filterDuplReads, using mixtures of NegBinom
+- Adjusted behavior of giniCoverage
+- Removed readAlignedBatch, export2Aligned, export2SGR, export2SAM
+
+VERSION 0.2.7
+- Fixed bug in filterDuplReads method for 'RangedDataList' which caused it not to pass on arguments to 'RangedData' method
+- Changed default value of ppOverAmp=.95 to .99 in filterDuplReads
+- Added function rowLogRegLRT
+- Fixed bug in alignPeaks caused by change in IRanges behavior.
+- Added function coverageDiff to compute difference in coverage between two objects
+- Fixed bug regionsCoverage caused by convertion of class "by" objects
+- Added plotChrRegions function
+- Added enrichedChrRegions function
+- Added countHitsWindow function
+- stdPeakLocation now allows to set xlim
+- plot method for cmdsFit objects now automatically puts both axis on the same scale
+- closestGene now allows argument genome to be of class data.frame. This avoids downloading the refflat file at each call.
+- Fixed bug in enrichedRegions which caused it to crash when sample1 had more chromosomes than sample2
+- Fixed bug in filterDuplReads which caused it to crash when no reads needed to be filtered
+- Fixed bug in regionsCoverage which caused it to crash for empty chromosomes
+- Removed functions genePlot, rangesPlot (moved to package casper)
+- Added regionsCoverage, gridCoverage, stdGrid functions
+- Added chipSeqQC function
+- enrichedRegions was trying to load multicores library instead of multicore.
+- Added ssdCoverage function
+- Added enrichedRegions method for RangedDataList objects. This allows comparing proportion of reads in islands across >2 samples.
+- Added islandCounts function
+- Improved memory usage and speed in filterDuplReads, which no longer relies on countOverlaps from package IRanges
+- Changed call to parallel to multicore::parallel to avoid confusion with other packages 
+VERSION 0.2.5
+- Added arguments maxRepeats and ppOverAmp to filterDuplReads to allow it to eliminate reads appearing more than k times (before only k=1 was allowed), or with a large posterior probability of being an artifact
+- Added ppEnrichedCounts function
+- Modified enrichedRegions to make it compatible with new IRanges version
+- Added cmds function to perform MultiDimensional Scaling on sequencing data
+- Exact P-value calculation in enrichedRegions is now based on Fisher's exact test, instead of simulations, to increase speed. Changed parameters simulate.p.value and B for exact.
+- Chi-square P-value calculation in enrichedRegions is now substantially faster (reduced to about 25% of previous implementation)
+- enrichedRegions now selects regions with pval <= pvalFilter, instead of pval < pvalFilter. This allows to obtain all regions by setting pvalFilter=1.
+- enrichedRegions now returns reads per kilobase per million (RPKM), as well as raw counts
+- Corrected enrichedRegions fold change calculation. Now it is (counts1/nsample1)/(counts2/nsample2) instead of (counts1/(nsample1-counts1))/(counts2/(nsample2-counts2))
+- Reduced substantially the amount of memory required by rangesPlot
+VERSION 0.2.3
+- Fixed issue in enrichedRegions which caused it to return an object with too many spaces
+- rangesPlot now produces a warning when no ranges are found in the specified region, but it still produces a plot
+- Added genePlot method for signature 'RangedData'
+- Fixed issue in genePlot which caused it to ignore the ... argument.
+- Fixed issue in genePlot which sometimes caused it to plot additional splicing variants
+- Fixed issue in 'filterDuplReads' which caused the returned object to have a too large number of spaces
+- Added methods for signature(regions='RangedData', sample1='RangedData', sample2='missing') and 
+- Fixed bug in enrichedRegions when no hits were found. Also changed argument 'parallelComp' for 'mc.cores', so facilitate using mclapply instead of 'parallel' calls
+- Added function tabDuplReads
+- Fixed bug in filterDuplReads for RangedData signature which caused it to filter two reads from different chromosomes which had the same start and end positions
+- Added extendRanges and filterDuplReads methods for RangedDataList objects. Added mc.cores argument to allow for parallel computing.
+- Added export2SGR method for RangedDataList objects.
+- export2SGR now uses 'coverage' function instead of 'pileup', as the latter has been deprecated
+- Added export2aligned method for RangedDataList objects. Added argument dir.
+- alignPeaks now returns an object of the same class as its input, instead of always returning IRangesList objects.
+- Added alignPeaks method for RangedDataList objects, and parameter mc.cores to allow parallel computation.
+- Major change in readAlignedBatch. Sequences from all files are now returned into a single RangedDataList object. Files are not directly saved to disk as in previous versions.
+- Fixed bug in rangesPlot which caused it to plot reads longer than maxFragLength twice
+- Fixed bug in genePlot which caused an error for genes with a single exon
+- Added PeakLocation function. It produces the same plots as stdPeakLocation except that it doesn't standardize the coordinates.
+- Added p-value adjustment in enrichedRegions. Defined methods for the case when sample2 is missing.
+- readAlignedBatch now checks for the existence of the files, and returns a warning if they don't.
+- Added listOverlap function, which allows to assess the overlap between lists e.g. two ChIP-seq experiments, or ChIP-Seq vs microarray results.
+- Corrected bug in alignPeaks which could cause sequences to start at negative indexes. 
+VERSION 0.2.1
+- ReadAlignedBatch now returns 'RangedData' objects. This required substantial structural changes, as new methods had to be defined and many existing ones needed to be adjusted.
+- Added methods 'filterDuplReads' and 'mergeRegions' for signature 'RangedData'
+- Changed stdPeakLocation to a generic function and defined methods for signatures data.frame and RangedData.
+- Added closestGene method for signature 'RangedData'.
+- Added enrichedPeaks function to detect peaks in sequencing experiments.
+- Added enrichedRegions function to detect significantly enriched regions in sequencing experiments.
+- closestGene modified: After bioC upgrade parameter multiple stoped working due to findOverlaps function that deprecated Overlaps function (which was used in previous versions). 
+- closestGene: Some rbinds have been removed and do.call is used insted to use less memory.
+- closestGene: Better control of downloaded refflat files has been added.
+- closestGene: new parameter added (promoterInOther). If it's TRUE peaks that are in a promoter region and inside other gene will be assigned to both genes. Only works when multiple=TRUE.
+VERSION 0.2.0
+- Fixed bug in alignPeaks which caused it not to work when there were some chromosomes with no sequences. Also, now alignPeaks reports the estimated shift.
+- readAlignedBatch deletes memory consuming objects after they have been saved to disk. This lowers memory requirements.
+- readAlignedBatch forces the chromosome names to start by 'chr', to ensure compatibility with external softwares.
+- Added vignette
+- Added Rd file for alignPeaks
+- Added export2aligned, export2SGR and rangesPlot methods for RangedData and RangedDataList objects.
+- export2SGR now longer requires to specify chromosome length for IRangesList and RangedDataList objects. The range of positions where reads have been observed is used instead.
+VERSION 0.1.2
+- Added vignette
+- Exported rangesPlot in NAMESPACE.
+- Added function stdPeakLocation to plot peak location in ChIP-Seq and ChIP-chip experiments
+- Corrected mismatching arguments in generic definition for genePlot. Also did minor changes to improve label appearance.
+- closestGene did not work after upgrading to R 2.10. 
+VERSION 0.1.1
+- closestGene now uses findOverlaps function instead of the deprecated 'overlap'.
+- Converted rangesPlot function to S4. Added methods for character, IRanges and IRangesList.
+- Converted genePlot function to S4. Added methods for IRanges, IRangesList and CompressedIRangesList objects (additionally to the already existing one for character).
+- Added alignPeaks function to align the '+' and '-' reads in ChipSeq experiments
+- Now readAlignedBatch returns a RangeDataList object for single end experiments instead of an IRangesList. This allows to store the strand information, which could not be done with the IRangesList object.
+- Added export2SAM function
+- Added export2aligned method for 'IRanges' objects
+- Added 'paired' option in readAlignedBatch
+- Changed default type='Bowtie' in readAlignedBatch
+- Added genePlot function
+- closestGene had an error when looking if a region falls in a promoter.
+- Distance to gene added to clsoestGene function.
+VERSION 0.1.0
+- Added readAlignedBatch function
+VERSION 0.0.1
+- extendRanges now outputs an IRangesList object instead of a simple list
+- Added export2aligned method.
+- Added export2SGR method for IRangesList objects
+- Added closestGene function.
+- Changed "c" for "rbind" in "enrichedRegions.r" line 92 (needed for IRanges version 1.6.0) 
+- Added require(multicore) to "enrichedRegions.r" and changed mclapply to lapply for non-parallel computation

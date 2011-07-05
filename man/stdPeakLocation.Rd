@@ -1,0 +1,90 @@
+\name{stdPeakLocation}
+\alias{stdPeakLocation}
+\alias{PeakLocation}
+\alias{stdPeakLocation-methods}
+\alias{stdPeakLocation,data.frame-method}
+\alias{stdPeakLocation,RangedData-method}
+\alias{PeakLocation-methods}
+\alias{PeakLocation,data.frame-method}
+\alias{PeakLocation,RangedData-method}
+\title{Peak density with respect to closest gene.}
+\description{
+\code{stdPeakLocation} plots the density of peaks with respect to the
+genomic feature (e.g. gene) in
+standardized gene coordinates so that genes with different lengths are
+comparable.
+
+\code{PeakLocation} produces the same plot in non-standardized coordinates (i.e. distances
+are measured in base pairs).
+}
+\section{Methods}{
+Methods for \code{stdPeakLocation} and \code{PeakLocation}
+
+\describe{
+\item{\code{signature(x = "data.frame")}}{ The data frame should contain
+  columns named \code{start} and \code{end} indicating the peak location,
+  \code{txStart}, \code{txEnd} indicating transcription start/end of the
+  closest gene and \code{strand} indicating the strand. }
+
+\item{\code{signature(x = "RangedData")}}{ \code{start(x)} and
+  \code{end(x)} indicate the peak location. \code{x} should contain
+  variables \code{x[['txStart']]}, \code{x[['txEnd']]} indicating the
+  transcription start/end of the closest gene and
+  \code{x[['strand']]} indicating the strand.}
+}}
+\usage{
+stdPeakLocation(x, startpos='start_position', endpos='end_position',
+strand='strand', distance, main='', xlab='Distance relative to feature length', xaxt='n',
+  xlim=c(-1,2), densityType="kernel", nbreaks=10, ...)
+
+PeakLocation(x, peakDistance=1000, startpos='start_position', endpos='end_position',
+strand='strand', distance, main='', xlab='Distance (bp)',
+  densityType="kernel", breaks, ...)
+}
+\arguments{
+\item{x}{A \code{RangedData} or \code{data.frame} indicating peak start and end in
+  \code{start} and \code{end}, and start and end of
+  the closest genomic feature (e.g. gene) in \code{startpos} and
+  \code{endpos}.}
+\item{peakDistance}{Peaks up to \code{peakDistance} bases upstream of
+  the closest feature are also used to obtain the plot.}
+\item{startpos}{Name of the variable storing the start position of the closest genomic feature.}
+\item{endpos}{Name of the variable storing the end position of the closest genomic feature.}
+\item{strand}{Name of the variable storing the strand for the closest genomic feature.}
+\item{distance}{Name of the variable indicating the distance between the
+  peak and the closest genomic feature. If left missing the distance
+  between the feature start and the mid-point of the peak is computed.}
+\item{main}{Graphical parameter passed on to \code{plot}.}
+\item{xlab}{Graphical parameter passed on to \code{plot}.}
+\item{xaxt}{Graphical parameter passed on to \code{plot}.}
+\item{xlim}{In \code{stdPeakLocation} the x-axis limit is set to
+  \code{xlim*peakDistance}. }
+\item{densityType}{If we eant a density plot or a histogram. Has to be
+  one of "kernel" (for the density plot) or "hist" for the histogram.}
+\item{nbreaks}{Number of breaks to be used. It will not be used if
+  \code{densityType} is different from "hist".}
+\item{breaks}{This parameter will be passed to the \code{hist} plotting
+  function. It will not be used if \code{densityType} is different from
+  "hist".}
+\item{...}{Further parameters passed on to \code{plot}.}
+}
+\value{
+  This function produces a density plot.
+}
+\examples{
+#Generate synthetic peaks
+set.seed(1)
+st <- runif(100,1,1000)
+en <- st+runif(length(st),25,100)
+peaks <- RangedData(IRanges(st,en),space='chr1')
+
+#Assign distance to closest gene
+#(typically one would call annotatePeakInBatch
+#from package ChIPpeakAnno to do this)
+peaks[['start_position']] <- start(peaks) + runif(nrow(peaks),-500,1000)
+peaks[['end_position']] <- peaks[['start_position']] + 500
+peaks[['distance']] <- peaks[['start_position']] - start(peaks)
+peaks[['strand']] <- sample(c('+','-'),nrow(peaks),replace=TRUE)
+PeakLocation(peaks,peakDistance=1000)
+}
+\keyword{ graphs }
