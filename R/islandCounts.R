@@ -42,7 +42,7 @@ fillRleList <- function(z, l) {
 
 setMethod(islandCounts, signature=(x='RangedDataList'), function(x, minReads=10, mc.cores=1) {
   #Add chromosomes missing in some samples
-  n <- sapply(x,names)
+  n <- lapply(x,names)
   alln <- unique(unlist(n))
   missx <- lapply(n, function(z) { miss <- alln[!(alln %in% z)]; RangedData(IRanges(integer(0),integer(0)),space=miss) })
   sel <- sapply(missx,length)>0

@@ -7,7 +7,7 @@ setMethod("filterDuplReads",signature(x='RangedData'),
       counts <- table(nrepeats)
       use <- 1:sum(cumsum(counts)/sum(counts)<negBinomUse)
       if (length(use)<=6) {
-        components=1
+        components <- 1
       } else if (length(use)<=8 & components>2) {
         components <- 2
       } else if (length(use)<=12 & components==4) {

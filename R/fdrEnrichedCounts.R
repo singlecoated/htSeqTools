@@ -9,15 +9,19 @@ fdrEnrichedCounts <- function(counts,use=1:10,components=0,mc.cores=1) {
         size1 <- params[1]; prob1 <- params[2]
         f1 <- dnbinom(as.numeric(names(x)),size1,prob1)
         f1.sum <- sum(f1)
-        q <- f1/f1.sum
-        ans <-  -dmultinom(x=x,prob=q,log=TRUE)
+        if (is.nan(f1.sum) | f1.sum==0) {
+          ans <- Inf
+        } else {
+          q <- f1/f1.sum
+          ans <-  -dmultinom(x=x,prob=q,log=TRUE)
+        }
       } else if (components==2) {
         size1 <- params[1]; size2 <- params[2]; prob1 <- params[3]; prob2 <- params[4]; w <- params[5]
         f1 <- dnbinom(as.numeric(names(x)),size1,prob1)
         f2 <- dnbinom(as.numeric(names(x)),size2,prob2)
         f1.sum <- sum(f1,na.rm=TRUE)
         f2.sum <- sum(f2,na.rm=TRUE)
-        if (is.na(w)) {
+        if (is.nan(w) | is.nan(f1.sum) | is.nan(f2.sum) | is.na(w) | f1.sum==0 | f2.sum==0) {
           ans <- Inf
         } else if (w<0.5) {
           ans <- Inf
@@ -33,7 +37,7 @@ fdrEnrichedCounts <- function(counts,use=1:10,components=0,mc.cores=1) {
         f1.sum <- sum(f1,na.rm=TRUE)
         f2.sum <- sum(f2,na.rm=TRUE)
         f3.sum <- sum(f3,na.rm=TRUE)
-        if (is.na(w1) | is.na(w2)) {
+        if (is.nan(w1) | is.nan(w2) | is.nan(f1.sum) | is.nan(f2.sum) | is.nan(f3.sum) | is.na(w1) | is.na(w2) | f1.sum==0 | f2.sum==0 | f3.sum==0) {
           ans <- Inf
         } else if (w1<0.5 | (w1+w2>=1)) {
           ans <- Inf
@@ -53,7 +57,7 @@ fdrEnrichedCounts <- function(counts,use=1:10,components=0,mc.cores=1) {
         f2.sum <- sum(f2,na.rm=TRUE)
         f3.sum <- sum(f3,na.rm=TRUE)
         f4.sum <- sum(f4,na.rm=TRUE)
-        if (is.na(w1) | is.na(w2) | is.na(w3)) {
+        if (is.nan(w1) | is.nan(w2) | is.nan(w3) | is.nan(f1.sum) | is.nan(f2.sum) | is.nan(f3.sum) | is.nan(f4.sum) | is.na(w1) | is.na(w2) | is.na(w3) | f1.sum==0 | f2.sum==0 | f3.sum==0 | f4.sum==0) {
           ans <- Inf          
         } else if (w1<0.5 | (w1+w2+w3>=1)) {
           ans <- Inf
