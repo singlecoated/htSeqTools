@@ -248,8 +248,8 @@ fdrEnrichedCounts <- function(counts,use=1:10,components=0,mc.cores=1) {
   cdfH0 <- cumsum(pdfH0[length(pdfH0):1])[length(pdfH0):1]
   cdfOverall <- cumsum(pdfOverall[length(pdfOverall):1])[length(pdfOverall):1]
   fdrEnriched <- cdfH0*pi0/cdfOverall
-  fdrEnriched[fdrEnriched<0] <- 0
-  fdrEnriched[fdrEnriched>1] <- 1
+  fdrEnriched[fdrEnriched<0] <- 0; fdrEnriched[fdrEnriched>1] <- 1
+  fdrEnriched <- -isoreg(1:length(fdrEnriched),-fdrEnriched)$yf
   ans <- data.frame(pdfH0=pdfH0,pdfOverall=pdfOverall,fdrEnriched=fdrEnriched)
   return(ans)
 }

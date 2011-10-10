@@ -35,7 +35,7 @@ function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
     islands1 <- IRanges(start=start(islands1), end=end(islands1))
     counts1 <- findOverlaps(islands1, ranges(regions)[[space]], select='first')
     sel <- !is.na(counts1)
-    ans <- RangedData(islands1[sel], height=m[sel], values(regions)[[space]][counts1[sel],], space=space)
+    ans <- RangedData(islands1[sel], height=m[sel], region.pvalue=values(regions)[[space]][counts1[sel],'pvalue'], space=space)
   } else {
     ans <- RangedData(IRanges(start=integer(0),end=integer(0)), space=space)
   }
@@ -88,7 +88,7 @@ function(regions, sample1, sample2, minHeight=5, space, mc.cores=1) {
     islands1 <- IRanges(start=start(islands1), end=end(islands1))
     counts1 <- findOverlaps(islands1, ranges(regions)[[space]], select='first')
     sel <- !is.na(counts1)
-    ans <- RangedData(islands1[sel], height=m[sel], values(regions)[[space]][counts1[sel],], space=space)
+    ans <- RangedData(islands1[sel], height=m[sel], region.pvalue=values(regions)[[space]][counts1[sel],'pvalue'], space=space)
   } else {
     ans <- RangedData(IRanges(start=integer(0),end=integer(0)), space=space)
   }

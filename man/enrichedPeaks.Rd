@@ -73,6 +73,14 @@ enrichedPeaks(regions, sample1, sample2, minHeight=100, space, mc.cores=1)
   Object of class \code{RangedData}
   indicating peaks higher than \code{minHeight}.
   Only peaks overlapping with \code{regions} are reported.
+  The maximum of the coverage in each selected peak is reported in the
+    column height (coverage in sample1 - sample2 when sample2 is
+    specified).
+  The column \code{region.pvalue} returns the p-value associated to the
+    region that the peak belongs to (i.e. it is inherited from
+    \code{regions}).
+    Therefore, notice that all peaks corresponding to a single
+    region will present the same \code{region.pvalue}.
 }
 \seealso{
   \code{enrichedRegions}
@@ -87,7 +95,8 @@ st <- round(runif(1000,1,1000))
 sample2 <- RangedData(IRanges(st,st+38),strand=strand,space=space)
 
 #Find enriched regions and call peaks
-regions <- enrichedRegions(sample1,sample2,minReads=50)
+mappedreads <- c(sample1=nrow(sample1),sample2=nrow(sample2))
+regions <- enrichedRegions(sample1,sample2,mappedreads=mappedreads,minReads=50)
 peaks <- enrichedPeaks(regions,sample1=sample1,sample2=sample2,minHeight=50)
 peaks <- peaks[width(peaks)>10,]
 peaks

@@ -47,8 +47,13 @@ Essentially, f(x) is estimated from the data
 (imposing that f(x) must be monotone decreasing after its mode using \code{isoreg}
 from packabe \code{base}, 
 to improve the estimate in the tails).
-pi0 is set to 1, i.e. its maximum possible value.
-The false discovery rate for enrichment is computed as \code{1-pi0*(1-cumsum(f0(x)))/(1-cumsum(f(x)))}.
+Currently pi0 is set to 1, i.e. its maximum possible value,
+which provides an upper bound for the FDR.
+The estimated false discovery rate for enrichment is
+\code{1-pi0*(1-cumsum(f0(x)))/(1-cumsum(f(x)))}.
+A monotone regression (isoreg) is applied to
+remove small random fluctuations in the estimated FDR
+and to guarantee that it decreases with x.
 }
 \references{
 Ji et al. An integrated software system for analyzing ChIP-chip and ChIP-seq data. Nature Biotechnology, 2008, 26, 1293-1300.

@@ -6,6 +6,10 @@
 \alias{lines,gridCover-method}
 \alias{plot,gridCover,ANY-method}
 \alias{show,gridCover-method}
+\alias{getViewsInfo,gridCover-method}
+\alias{getCover,gridCover-method}
+\alias{getViewsInfo}
+\alias{getCover}
 
 \title{Class "gridCover"}
 \description{
@@ -38,6 +42,10 @@ Objects of this class are returned by call to the function \code{gridCoverage}.
     \item{stdGrid}{\code{signature(x = "gridCover")}: Standardize the
       coverage by dividing by either the mean or the maximum coverage
       in each region. }
+    \item{getViewsinfo}{\code{signature(x = "gridCover")}: Accessor for
+      the \code{viewsInfo} slot.}
+    \item{getCover}{\code{signature(x = "gridCover")}: Accessor for
+      the \code{cover} slot.}
   }
 }
 \author{David Rossell}

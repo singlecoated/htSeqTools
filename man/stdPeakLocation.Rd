@@ -46,8 +46,8 @@ strand='strand', distance, main='', xlab='Distance (bp)',
   \code{start} and \code{end}, and start and end of
   the closest genomic feature (e.g. gene) in \code{startpos} and
   \code{endpos}.}
-\item{peakDistance}{Peaks up to \code{peakDistance} bases upstream of
-  the closest feature are also used to obtain the plot.}
+\item{peakDistance}{Peaks more than \code{peakDistance} bases upstream
+  or more than \code{3*peakDistance} downstream of the closest feature are discarded.}
 \item{startpos}{Name of the variable storing the start position of the closest genomic feature.}
 \item{endpos}{Name of the variable storing the end position of the closest genomic feature.}
 \item{strand}{Name of the variable storing the strand for the closest genomic feature.}

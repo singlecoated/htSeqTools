@@ -304,6 +304,8 @@ associated with a given cutoff
 q <- which(cumsum(nrepeats/sum(nrepeats))>.999)[1]
 q
 fdrest <- fdrEnrichedCounts(nrepeats, use=1:q, components=1)
+numRepeArtif <- rownames(fdrest[fdrest$fdrEnriched<0.01,])[1]
+numRepeArtif
 @ 
 
 \normalsize
@@ -319,7 +321,7 @@ indicates the FDR cutoff to determine over-amplification.
 We also show the distribution of the observed number of repeats
 (blue)
 and its truncated negative binomial approximation in $\left[ 1,14 \right]$ (red).
-Notice that any sequence repeating over 40 times
+Notice that any sequence repeating over 25 times
 (including our artificial sequence repeating 200 times)
 is regarded
 as an artifact.
@@ -448,7 +450,7 @@ and obtain the number of reads in each sample overlapping with these regions.
 <<islandCounts>>=
 ip <- rbind(htSample[[2]],htSample[[4]])
 ctrl <- rbind(htSample[[1]],htSample[[3]])
-pool <- RangedDataList(ip=ctrl, ctrl=ctrl)
+pool <- RangedDataList(ip=ip, ctrl=ctrl)
 counts <- islandCounts(pool,minReads=10)
 head(counts)
 @ 
@@ -464,7 +466,9 @@ with the function \texttt{enrichedRegions}.
 \footnotesize
 
 <<enrichedRegions>>=
-regions <- enrichedRegions(sample1=ip,sample2=ctrl,minReads=10,p.adjust.method='BY',pvalFilter=.05,twoTailed=FALSE)
+mappedreads <- c(ip=nrow(ip),ctrl=nrow(ctrl))
+mappedreads
+regions <- enrichedRegions(sample1=ip,sample2=ctrl,minReads=10,mappedreads=mappedreads,p.adjust.method='BY',pvalFilter=.05,twoTailed=FALSE)
 head(regions)
 nrow(regions)
 @ 
@@ -636,9 +640,9 @@ As each region has a different length it may be hard to compare coverages across
 e.g. to cluster regions with similar coverage profiles.
 \texttt{gridCoverage} simplifies this task by evaluating the coverage on a regular grid
 of 500 equally spaced points between the region start and end.
-The result is stored in an object of class \texttt{gridCover},
-which contains the coverage in the slot \texttt{cover}
-and some summary information about each region in \texttt{viewsInfo}.
+The result is stored in an object of class \texttt{gridCover}. The object contains the 
+coverage, which can be accesed with the method \texttt{getViewsInfo}.
+
 
 \footnotesize
 
@@ -648,8 +652,8 @@ rcov <- regionsCoverage(space(regions),start(regions),end(regions),cover=cover)
 names(rcov)
 rcov[['views']]
 gridcov <- gridCoverage(rcov)
-dim(gridcov@cover)
-gridcov@viewsInfo
+dim(getCover(gridcov))
+getViewsInfo(gridcov)
 @ 
 
 
@@ -661,9 +665,9 @@ which suggests the use of some clustering technique to find subgroups of regions
 \footnotesize
 
 <<label=figregCoverage,include=FALSE>>=
-ylim <- c(0,max(gridcov@viewsInfo[['maxCov']]))
+ylim <- c(0,max(getViewsInfo(gridcov)[['maxCov']]))
 plot(gridcov, ylim=ylim,lwd=2)
-for (i in 1:nrow(regions)) lines(gridcov@cover[i,], col='gray', lty=2)
+for (i in 1:nrow(regions)) lines(getCover(gridcov)[i,], col='gray', lty=2)
 @ 
 
 \normalsize

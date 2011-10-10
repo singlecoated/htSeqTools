@@ -1,63 +1,65 @@
 \name{enrichedRegions}
 \alias{enrichedRegions}
 \alias{enrichedRegions-methods}
-\alias{enrichedRegions,missing,missing,RangedData-method}
-\alias{enrichedRegions,RangedDataList,missing,missing-method}
-\alias{enrichedRegions,RangedData,RangedData,missing-method}
-\alias{enrichedRegions,RangedData,missing,missing-method}
+\alias{enrichedRegions,RangedData,RangedData,missing,ANY,ANY-method}
+\alias{enrichedRegions,RangedData,missing,missing,ANY,ANY-method}
+\alias{enrichedRegions,RangedDataList,missing,missing,ANY,ANY-method}
+\alias{enrichedRegions,missing,missing,RangedData,ANY,missing-method}
+\alias{enrichedRegions,missing,missing,RangedData,ANY,numeric-method}
 \title{Find significantly enriched regions in sequencing experiments.}
 \description{
-Find regions with a significant accumulation of reads in a sequencing experiments.
+  Find regions with a significant accumulation of reads in a sequencing experiment.
 }
 \section{Methods}{
-\describe{
-  
-\item{\code{signature(sample1 = "missing", sample2 =
-    "missing", regions = "RangedData")}}{\code{ranges(regions)}
-    indicates the chromosome, start and end of genomic regions, while \code{values{regions}} should
-    indicate the observed number of reads for each group in each
-    region. \code{enrichedRegions} tests the null hypothesis that the
-    proportion of reads in the region is equal across all groups via a
-    likelihood-ratio test (or permutation-based chi-square for regions
-    where the expected counts are below 5 for some group). }
-  
-\item{\code{signature(sample1 = "RangedDataList", sample2 =
-    "missing", regions = "missing")}}{Each element in \code{sample1} contains the read
-  start/end of an individual sample. \code{enrichedRegions} identifies
-    regions with high concentration of reads (across all samples) and
-    then compares the counts across groups using a likelihood-ratio test
-    (or permutation-based chi-square for regions
-    where the expected counts are below 5 for some group).}
-  
-\item{\code{signature(sample1 = "RangedData", sample2 = "RangedData", regions = "missing")}}{
-  \code{space(sample1)} indicates the chromosome, \code{start(sample1)}
-  and \code{end(sample1)} the start/end position of the reads. Similarly
-  for \code{sample2}. \code{enrichedRegions} identifies
-    regions with high concentration of reads (across all samples) and
-    then compares the counts across groups using a likelihood-ratio test
-    (or permutation-based chi-square for regions
-    where the expected counts are below 5 for some group).}
+  \describe{
+    
+    \item{\code{signature(sample1 = "missing", sample2 =
+	"missing", regions = "RangedData")}}{\code{ranges(regions)}
+      indicates the chromosome, start and end of genomic regions, while \code{values{regions}} should
+      indicate the observed number of reads for each group in each
+      region. \code{enrichedRegions} tests the null hypothesis that the
+      proportion of reads in the region is equal across all groups via a
+      likelihood-ratio test (or permutation-based chi-square for regions
+      where the expected counts are below 5 for some group). }
 
-\item{\code{signature(sample1 = "RangedData", sample2 = "missing",
-    regions = "missing")}}{\code{space(sample1)} indicates the chromosome, \code{start(sample1)}
-  and \code{end(sample1)} the start/end position of the reads.
-  \code{enrichedRegions} tests the null hypothesis that an unusually high proportion of reads has been
-    observed in the region using an exact binomial test.}
+    \item{\code{signature(sample1 = "RangedDataList", sample2 =
+	"missing", regions = "missing")}}{Each element in \code{sample1} contains the read
+      start/end of an individual sample. \code{enrichedRegions} identifies
+      regions with high concentration of reads (across all samples) and
+      then compares the counts across groups using a likelihood-ratio test
+      (or permutation-based chi-square for regions
+      where the expected counts are below 5 for some group).}
+    
+    \item{\code{signature(sample1 = "RangedData", sample2 = "RangedData",
+	regions = "missing")}}{ \code{space(sample1)}
+      indicates the chromosome, \code{start(sample1)} and
+      \code{end(sample1)} the start/end position of the reads. Similarly for
+      \code{sample2}. \code{enrichedRegions} identifies regions with high
+      concentration of reads (across all samples) and then compares the
+      counts across groups using a likelihood-ratio test (or
+      permutation-based chi-square for regions where the expected counts are
+      below 5 for some group).}
+
+    \item{\code{signature(sample1 = "RangedData", sample2 = "missing",
+	regions = "missing")}}{\code{space(sample1)} indicates the chromosome, \code{start(sample1)}
+      and \code{end(sample1)} the start/end position of the reads.
+      \code{enrichedRegions} tests the null hypothesis that an unusually high proportion of reads has been
+      observed in the region using an exact binomial test.}
 
 }}
 \usage{
-enrichedRegions(sample1, sample2, regions, minReads=10,
-pvalFilter=0.05, exact=FALSE, p.adjust.method='none',
-twoTailed=FALSE, mc.cores=1)
+enrichedRegions(sample1, sample2, regions, minReads=10, mappedreads,
+pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,
+mc.cores=1) 
 }
 \arguments{
   \item{sample1}{Either start and end of sequences in sample 1 (\code{IRangesList}, \code{RangedData} or \code{IRanges} object),
-   of \code{RangedDataList} with sequences for all samples
-   (\code{sample2} must be left missing in this case) .}
- \item{sample2}{Same for sample 2. Can be left missing.}
- \item{regions}{If specified, the analysis is restricted to the regions
-   indicated in \code{regions}. If not specified, the regions are
-   automatically defined using the argument \code{minReads}.}
+    of \code{RangedDataList} with sequences for all samples
+    (\code{sample2} must be left missing in this case) .}
+  \item{sample2}{Same for sample 2. Can be left missing.}
+  \item{regions}{If specified, the analysis is restricted to the regions
+    indicated in \code{regions}. If not specified, the regions are
+    automatically defined using the argument \code{minReads}.}
   \item{minReads}{This argument is only used when \code{regions} is not
     specified. The regions to be tested for enrichment are those with coverage
     greater or equal than \code{minReads}.
@@ -66,6 +68,8 @@ twoTailed=FALSE, mc.cores=1)
     Otherwise, if \code{twoTailed} is FALSE, only the reads in
     sample 1 are counted. If \code{twoTailed} is TRUE, the sum of reads
     in samples 1 and 2 are counted.}
+  \item{mappedreads}{Number of mapped reads for the sample. Has to be of
+    class integer. Will be used to compute RPKM.}
   \item{pvalFilter}{Only regions with P-value below \code{pvalFilter}
     are reported as being enriched.}
   \item{exact}{ If set to TRUE, an exact test is used whenever
@@ -79,16 +83,16 @@ twoTailed=FALSE, mc.cores=1)
     \code{p.adjust}.}
   \item{twoTailed}{If set to FALSE, only regions with a higher
     concentration of reads in sample 1 than in sample 2 are reported. If
-  set to TRUE, regions with higher concentration of sample 2 reads are
-  also reported. Ignored if \code{sample2} is missing.}
+    set to TRUE, regions with higher concentration of sample 2 reads are
+    also reported. Ignored if \code{sample2} is missing.}
   \item{mc.cores}{If \code{mc.cores} is greater than 1, computations are
     performed in parallel for each element in the
     \code{IRangesList} objects. Whenever possible the \code{mclapply}
     function is used, therefore exactly \code{mc.cores} are used. For
     some signatures \code{mclapply} cannot be used, in which case the \code{parallel} function from package
-  \code{multicore} is used. Note: the latter option launches as many parallel
-  processes as there are elements in \code{x}, which can place strong
-  demands on the processor and memory.}
+    \code{multicore} is used. Note: the latter option launches as many parallel
+    processes as there are elements in \code{x}, which can place strong
+    demands on the processor and memory.}
 }
 \value{
   Object of class \code{RangedData}

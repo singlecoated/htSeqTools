@@ -134,7 +134,8 @@ meanRandomHits <- function(nSims=10, cutseq, nhits, chrLength, windowSize=10^4-1
 
 randomHitsWindow <- function(nhits, chrLength, windowSize=10^4-1) {
 #Could nb of hits in a window (as in countHitsWindow) when hits are generated uniformly distributed
-  chrRand <- as.vector(rmultinom(n=1, size=nhits, prob=chrLength/sum(chrLength)))
+  probs <- chrLength/(length(chrLength)*mean(chrLength))
+  chrRand <- as.vector(rmultinom(n=1, size=nhits, prob=probs))
   chrRand <- rep(names(chrLength),chrRand)
   posRand <- floor(runif(nhits,min=1,max=chrLength[chrRand]+1))
   xRand <- RangedData(IRanges(posRand,posRand),space=chrRand)

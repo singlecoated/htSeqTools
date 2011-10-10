@@ -1,4 +1,4 @@
-setMethod("cmdsFit", signature=c(d='matrix'), function(d,k=2,type='classic') {
+setMethod("cmdsFit", signature=c(d='matrix'), function(d,k=2,type='classic',cor.method='pearson') {
   if (type=='classic') {
     ans <- cmdscale(as.dist(d), k=k)
   } else if (type=='isoMDS') {
@@ -11,7 +11,7 @@ setMethod("cmdsFit", signature=c(d='matrix'), function(d,k=2,type='classic') {
 }
 )
 
-setMethod("cmds", signature(x='RangedDataList'), function(x, k=2, logscale=TRUE, mc.cores=1) {
+setMethod("cmds", signature(x='RangedDataList'), function(x, k=2, logscale=TRUE, mc.cores=1, cor.method='pearson') {
   cat('Computing coverage...\n')
   if (mc.cores>1) {
     if ('multicore' %in% loadedNamespaces()) {
@@ -29,9 +29,9 @@ setMethod("cmds", signature(x='RangedDataList'), function(x, k=2, logscale=TRUE,
   index <- index[index[,1]<index[,2],]
   index <- as.list(data.frame(t(index)))
   if (mc.cores>1) {
-    d <- multicore::mclapply(index, function(z) corRleList(cover[[z[1]]], cover[[z[2]]]), mc.cores=mc.cores, mc.preschedule=FALSE)
+    d <- multicore::mclapply(index, function(z) corRleList(cover[[z[1]]], cover[[z[2]]], cor.method=cor.method), mc.cores=mc.cores, mc.preschedule=FALSE)
   } else {
-    d <- lapply(index, function(z) corRleList(cover[[z[1]]], cover[[z[2]]]))
+    d <- lapply(index, function(z) corRleList(cover[[z[1]]], cover[[z[2]]], cor.method=cor.method))
   }
   #
   r <- diag(length(cover))
@@ -50,9 +50,9 @@ setMethod("cmds", signature(x='RangedDataList'), function(x, k=2, logscale=TRUE,
 }
 )
 
-corRleList <- function(z1, z2) {
+corRleList <- function(z1, z2, cor.method='pearson') {
   n <- names(z1)[names(z1) %in% names(z2)]
-  ans <- mapply(corRle, z1[n], z2[n])
+  ans <- mapply(function(x,y) corRle(x,y,cor.method=cor.method), z1[n], z2[n])
   #Correlation is 0 for elements present only in z1 or only in z2
   notinz2 <- names(z1)[!names(z1) %in% names(z2)]
   if (length(notinz2)>0) {
@@ -71,12 +71,16 @@ corRleList <- function(z1, z2) {
   sum(ans*l/sum(l))
 }
 
-corRle <- function(z1, z2) {
+corRle <- function(z1, z2, cor.method='pearson') {
   l1 <- length(z1); l2 <- length(z2)
   if (l1>l2) {
     z2 <- c(z2, Rle(0,l1-l2))
   } else {
     z1 <- c(z1, Rle(0,l2-l1))
+  }
+  if (cor.method=='spearman') {
+    z1@values <- rank(z1@values)
+    z2@values <- rank(z2@values)    
   }
   cor(z1,z2)
 }

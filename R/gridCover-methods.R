@@ -45,3 +45,25 @@ setMethod("stdGrid", signature(cover="gridCover"), function(cover, colname='maxC
   return(cover)
 }
 )
+
+
+
+########## ACCESSOR for viewsInfo slot #########
+
+setGeneric("getViewsInfo", function(x="gridCover") standardGeneric("getViewsInfo"))
+setMethod("getViewsInfo", signature(x="gridCover"), function(x) {
+  ans <- x@viewsInfo
+  return(ans)
+}
+)
+
+
+
+########## ACCESSOR for cover slot #########
+
+setGeneric("getCover", function(x="gridCover") standardGeneric("getCover"))
+setMethod("getCover", signature(x="gridCover"), function(x) {
+  ans <- x@cover
+  return(ans)
+}
+)

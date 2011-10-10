@@ -9,14 +9,17 @@ cat("R-squared=",round(object@R.square,4), "\n")
 
 
 ## PLOT
-setMethod("plot", signature(x="cmdsFit"), function(x, y, ...) {
-  xlim <- 1.2*range(x@points)
+setMethod("plot", signature(x="cmdsFit"), function(x, y, xlim, labels, cex.text=1, ...) {
+  if (missing(xlim)) xlim <- 1.2*range(x@points)
+  if (missing(labels)) labels <- rownames(x@points)
   if (ncol(x@points)==1) {
     plot(x@points, rep(0,2), xlim=xlim, ylim=xlim, xlab='', ylab='', ...)
-    text(x@points, rep(0,2), rownames(x@points), pos=3)
+    text(x@points, rep(0,2), labels, pos=3)
   } else {
     plot(x@points, xlim=xlim,ylim=xlim,xlab='',ylab='',...)
-    text(x@points[,1],x@points[,2],rownames(x@points),pos=3)
+    text(x@points[,1],x@points[,2],labels,pos=3,cex=cex.text)
   }
 }
 )
+
+

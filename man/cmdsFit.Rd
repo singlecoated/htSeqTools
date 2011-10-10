@@ -16,7 +16,7 @@ which best approximate the given distances between objects.
 
 }}
 \usage{
-cmdsFit(d, k=2, type='classic')
+cmdsFit(d, k=2, type='classic', cor.method='pearson')
 }
 \arguments{
 \item{d}{ Distances between objects}
@@ -26,7 +26,9 @@ cmdsFit(d, k=2, type='classic')
   function \code{cmdscale} from package \code{stats}). Set to
   \code{"isoMDS"} to use Kruskal's non-metric MDS (uses function
   \code{isoMDS} from package \code{MASS}). }
-}
+\item{cor.method}{ A character string indicating which correlation
+  coefficient (or covariance) is to be computed.  One of "pearson"
+  (default), "kendall", or "spearman", can be abbreviated.}}
 \value{
   The function returns a \code{cmdsFit} object.
   See help("cmdsFit-class") for details.

@@ -21,7 +21,7 @@ This provides PCA analog for sequencing data.
   between elements is used to define distances. }
 }}
 \usage{
-cmds(x, k=2, logscale=TRUE, mc.cores=1)
+cmds(x, k=2, logscale=TRUE, mc.cores=1, cor.method='pearson')
 }
 \arguments{
 \item{x}{ A \code{RangedDataList} object, e.g. each element containing the
@@ -32,6 +32,9 @@ cmds(x, k=2, logscale=TRUE, mc.cores=1)
 \item{mc.cores}{Number of cores. Setting \code{mc.cores>1} allows
   running computations in parallel. Setting \code{mc.cores} to too large
   a value may require a lot of memory.}
+\item{cor.method}{ A character string indicating which correlation coefficient
+          (or covariance) is to be computed.  One of "pearson"
+          (default), "kendall", or "spearman", can be abbreviated.}
 }
 \value{
   The function returns a \code{mdsFit} object, with slots
