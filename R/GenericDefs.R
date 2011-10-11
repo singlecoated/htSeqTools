@@ -3,7 +3,7 @@ setGeneric("alignPeaks",function(x, strand, npeaks=1000, bandwidth=150, mc.cores
 setGeneric("countHitsWindow", function(x, chrLength, windowSize=10^4-1) standardGeneric("countHitsWindow"))
 setGeneric("countRepeats", function(reads, mc.cores=1) standardGeneric("countRepeats"))
 setGeneric("cmds", function(x, k=2, logscale=TRUE, mc.cores=1, cor.method='pearson') standardGeneric("cmds"))
-setGeneric("cmdsFit", function(d, k=2, type='classic', cor.method='pearson') standardGeneric("cmdsFit"))
+setGeneric("cmdsFit", function(d, k=2, type='classic', add=FALSE, cor.method='pearson') standardGeneric("cmdsFit"))
 setGeneric("ssdCoverage", function(x, mc.cores=1) standardGeneric("ssdCoverage"))
 setGeneric("giniCoverage", function(sample, mc.cores=1, mk.plot=FALSE, seqName='missing', species="missing", chrLengths='missing', numSim="missing") standardGeneric("giniCoverage"))
 setGeneric("enrichedChrRegions", function(hits1, hits2, chrLength, windowSize=10^4-1, fdr=0.05, nSims=10, mc.cores=1) standardGeneric("enrichedChrRegions"))

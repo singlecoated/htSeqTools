@@ -1,6 +1,7 @@
-setMethod("cmdsFit", signature=c(d='matrix'), function(d,k=2,type='classic',cor.method='pearson') {
+setMethod("cmdsFit", signature=c(d='matrix'), function(d,k=2,type='classic',add=FALSE,cor.method='pearson') {
   if (type=='classic') {
-    ans <- cmdscale(as.dist(d), k=k)
+    ans <- cmdscale(as.dist(d), k=k, add=add)
+    if (add) ans <- ans$points
   } else if (type=='isoMDS') {
     ans <- isoMDS(d, k=k, maxit=100, trace=FALSE)$points
   }
