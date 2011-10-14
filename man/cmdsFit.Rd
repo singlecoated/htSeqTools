@@ -37,7 +37,8 @@ cmdsFit(d, k=2, type='classic', add=FALSE, cor.method='pearson')
   See help("cmdsFit-class") for details.
 }
 \examples{
-d <- matrix(c(0,5,10,5,0,15,10,15,0),byrow=TRUE,ncol=3)
-cmdsFit(d,add=TRUE)
+### Not run
+#d <- matrix(c(0,5,10,5,0,15,10,15,0),byrow=TRUE,ncol=3)
+#cmdsFit(d,add=TRUE)
 }
 \keyword{ graphs }

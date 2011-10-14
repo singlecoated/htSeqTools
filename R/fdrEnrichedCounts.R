@@ -103,7 +103,7 @@ fdrEnrichedCounts <- function(counts,use=1:10,components=0,mc.cores=1) {
       ans[[giveMe]]
     }
     df2list <- function(y) unclass(as.data.frame(t(unique(do.call(rbind,lapply(p,function(x) y))))))
-    p <- seq(0.1,0.9,0.2); w1 <- seq(0.5,1,length=4); w2 <- seq(0.1,0.5,length=5)
+    p <- seq(0.1,0.9,length=3); w1 <- seq(0.5,1,length=3); w2 <- seq(0.1,0.5,length=3)
     tmp <- do.call(rbind,lapply(p,function(x) cbind(rep(x,length(p)),p)))
     tmp <- do.call(rbind,lapply(p,function(x) cbind(tmp,rep(x,length(p)))))
     tmp <- do.call(rbind,lapply(p,function(x) cbind(tmp,rep(x,length(p)))))    
@@ -193,6 +193,7 @@ fdrEnrichedCounts <- function(counts,use=1:10,components=0,mc.cores=1) {
           objec <- unlist(multicore::mclapply(tmp.list,function(x) mynlminb(params=x,numexp,numtrial,'objective',components),mc.cores=mc.cores, mc.preschedule=FALSE))
         } else stop('multicore library has not been loaded!')
       } else {
+browser()          
         objec <- unlist(lapply(tmp.list,function(x) mynlminb(params=x,numexp,numtrial,'objective',components)))
       }
       ans <- mynlminb(tmp.list[[which(objec==min(objec))[1]]],numexp,numtrial,'par',components)
