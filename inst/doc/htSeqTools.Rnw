@@ -607,6 +607,7 @@ and \texttt{stdPeakLocation}).
 \footnotesize
 
 <<label=figplots1,include=FALSE>>=
+set.seed(1)
 peaksanno <- peaks
 peaksanno[['start_position']] <- start(peaksanno) + runif(nrow(peaksanno),-500,1000)
 peaksanno[['end_position']] <- peaksanno[['start_position']] + 500

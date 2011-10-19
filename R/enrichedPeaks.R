@@ -6,20 +6,21 @@ function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
 
 setMethod("enrichedPeaks", signature(regions='RangedData', sample1='IRangesList', sample2='missing'),
 function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
-  f <- function(y,z) { enrichedPeaks(regions=regions, sample1=y, minHeight=minHeight, space=z) }
   n <- names(regions)
   sample1 <- sample1[n]
+  f <- function(idx) {
+    ans <- vector("list",length(idx))
+    for (j in 1:length(idx)) ans[[j]] <- enrichedPeaks(regions=regions,sample1=sample1[[idx[j]]],minHeight=minHeight,space=n[idx[j]])
+    return(ans)
+  }
   if (mc.cores>1) {
     if ('multicore' %in% loadedNamespaces()) {
-      for (i in 1:length(n)) { multicore::parallel(f(sample1[[i]],n[i])) }
-      ans <- multicore::collect()
+      ans <- pvec(1:length(n), f, mc.cores=mc.cores)
     } else stop('multicore library has not been loaded!')
   } else {
-    ans <- vector("list",length(n))
-    for (i in 1:length(n)) { ans[[i]] <- f(sample1[[i]],n[i]) }
+    ans <- f(1:length(n))
   }
-  names(ans) <- rep('',length(ans))
-  ans <- do.call(c,ans)
+  ans <- do.call(rbind,ans)
   return(ans)
 }
 )
@@ -52,20 +53,21 @@ function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
 
 setMethod("enrichedPeaks", signature(regions='RangedData', sample1='IRangesList', sample2='IRangesList'),
 function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
-  f <- function(y1,y2,z) { enrichedPeaks(regions=regions, sample1=y1, sample2=y2, minHeight=minHeight, space=z) }
   n <- names(regions)
   sample1 <- sample1[n]; sample2 <- sample2[n]
+  f <- function(idx) {
+    ans <- vector("list",length(idx))
+    for (j in 1:length(idx)) ans[[j]] <- enrichedPeaks(regions=regions,sample1=sample1[[idx[j]]],sample2=sample2[[idx[j]]],minHeight=minHeight,space=n[idx[j]])
+    return(ans)
+  }
   if (mc.cores>1) {
     if ('multicore' %in% loadedNamespaces()) {
-      for (i in 1:length(n)) { multicore::parallel(f(sample1[[i]],sample2[[i]],n[i])) }
-      ans <- multicore::collect()
+       ans <- pvec(1:length(n), f, mc.cores=mc.cores)
     } else stop('multicore library has not been loaded!')
   } else {
-    ans <- vector("list",length(n))
-    for (i in 1:length(n)) { ans[[i]] <- f(sample1[[i]],sample2[[i]],n[i]) }
+    ans <- f(1:length(n))
   }
-  names(ans) <- rep('',length(ans))
-  ans <- do.call(c,ans)
+  ans <- do.call(rbind,ans)
   return(ans)
 }
 )
