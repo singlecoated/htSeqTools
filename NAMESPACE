@@ -1,3 +1,5 @@
+import(methods)
+import(BiocGenerics)
 import(IRanges)
 importFrom("graphics", "plot", "lines")
 importFrom("MASS", "isoMDS")
