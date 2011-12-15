@@ -7,6 +7,9 @@
 \alias{enrichedPeaks,RangedData,IRangesList,missing-method}
 \alias{enrichedPeaks,RangedData,RangedData,missing-method}
 \alias{enrichedPeaks,RangedData,RangedData,RangedData-method}
+\alias{enrichedPeaks,GRanges,GRanges,GRanges-method}
+\alias{enrichedPeaks,GRanges,GRanges,missing-method}
+\alias{enrichedPeaks,GRanges,missing,missing-method}
 \title{Find peaks in sequencing experiments.}
 \description{
 Find peaks in 

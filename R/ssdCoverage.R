@@ -20,3 +20,19 @@ setMethod("ssdCoverage", signature(x='RangedDataList'), function(x, mc.cores=1) 
   return(unlist(ans))
 }
 )
+
+setMethod("ssdCoverage", signature(x='GRanges'),
+  function(x, mc.cores=1) {
+    x <- as(x,'RangedData')
+    ans <- ssdCoverage(x,mc.cores=mc.cores)
+    return(ans)
+  }
+)
+
+setMethod("ssdCoverage", signature(x='GRangesList'),
+  function(x, mc.cores=1) {
+    x <- RangedDataList(lapply(x,function(y) as(y,'RangedData')))
+    ans <- ssdCoverage(x,mc.cores=mc.cores)
+    return(ans)
+  }
+)

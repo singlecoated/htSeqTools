@@ -9,6 +9,14 @@
 \alias{giniCoverage,RangedDataList,ANY,ANY,ANY,character,missing-method}
 \alias{giniCoverage,RangedDataList,ANY,ANY,ANY,missing,integer-method}
 \alias{giniCoverage,RangedDataList,ANY,ANY,ANY,missing,missing-method}
+\alias{giniCoverage,GRanges,ANY,ANY,ANY,character,integer-method}
+\alias{giniCoverage,GRanges,ANY,ANY,ANY,character,missing-method}
+\alias{giniCoverage,GRanges,ANY,ANY,ANY,missing,integer-method}
+\alias{giniCoverage,GRanges,ANY,ANY,ANY,missing,missing-method}
+\alias{giniCoverage,GRangesList,ANY,ANY,ANY,character,integer-method}
+\alias{giniCoverage,GRangesList,ANY,ANY,ANY,character,missing-method}
+\alias{giniCoverage,GRangesList,ANY,ANY,ANY,missing,integer-method}
+\alias{giniCoverage,GRangesList,ANY,ANY,ANY,missing,missing-method}
 \title{
 Compute Gini coefficient.
 }

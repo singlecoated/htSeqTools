@@ -92,3 +92,21 @@ setMethod(islandCounts, signature=(x='RangedData'), function(x, minReads=10, mc.
   islandCounts(RangedDataList(x), minReads=minReads, mc.cores=mc.cores)
 }
 )
+
+setMethod(islandCounts, signature=(x='GRanges'),
+  function(x, minReads=10, mc.cores=1) {
+    x <- as(x,'RangedData')
+    ans <- islandCounts(x,minReads=minReads,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)
+
+setMethod(islandCounts, signature=(x='GRangesList'),
+  function(x, minReads=10, mc.cores=1) {
+    x <- RangedDataList(lapply(x,function(y) as(y,'RangedData')))
+    ans <- islandCounts(x,minReads=minReads,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)

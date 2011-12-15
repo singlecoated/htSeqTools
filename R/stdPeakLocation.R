@@ -80,3 +80,19 @@ PeakLocationBase <- function(st, end, startpos, endpos, strand, distance, peakDi
   segments(x0=-1:2,x1=-1:2,y0=y0,y1=y1)
   text(0,y1,'Start')
 }
+
+setMethod("stdPeakLocation", signature(x='GRanges'),
+  function(x, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance relative to feature length', xaxt='n', xlim=c(-.25,1.5), densityType='kernel', nbreaks=10, ...) {
+    x <- as(x,'RangedData')
+    ans <- stdPeakLocation(x,startpos=startpos,endpos=endpos,strand=strand,distance=distance,main=main,xlab=xlab,xaxt=xaxt,xlim=xlim,densityType=densityType,nbreaks=nbreaks,...)
+    return(ans)
+  }
+)
+
+setMethod("PeakLocation", signature(x='GRanges'),
+  function(x, peakDistance=10^4, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance (bp)', densityType='kernel', breaks, ...) {
+    x <- as(x,'RangedData')
+    ans <- PeakLocation(x,peakDistance=peakDistance,startpos=startpos,endpos=endpos,strand=strand,distance=distance,main=main,xlab=xlab,densityType=densityType,breaks=breaks,...)
+    return(ans)
+  }
+)

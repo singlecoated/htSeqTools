@@ -15,3 +15,18 @@ setMethod("tabDuplReads", signature(x='RangedDataList'),
   }
 )
 
+setMethod("tabDuplReads",signature(x='GRanges'),
+  function(x, minRepeats=1, mc.cores=1) {
+    x <- as(x,'RangedData')
+    ans <- tabDuplReads(x,minRepeats=minRepeats,mc.cores=mc.cores)
+    return(ans)
+  }
+)
+
+setMethod("tabDuplReads",signature(x='GRangesList'),
+  function(x, minRepeats=1, mc.cores=1) {
+    x <- RangedDataList(lapply(x,function(y) as(y,'RangedData')))
+    ans <- tabDuplReads(x,,minRepeats=minRepeats,mc.cores=mc.cores)
+    return(ans)
+  }
+)

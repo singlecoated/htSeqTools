@@ -7,6 +7,7 @@
 \alias{mergeRegions,matrix-method}
 \alias{mergeRegions,RangedData-method}
 \alias{mergeRegions,RleViews-method}
+\alias{mergeRegions,GRanges-method}
 \title{
 Merge nearby chromosomal regions.
 }

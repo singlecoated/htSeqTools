@@ -2,6 +2,7 @@
 \alias{cmds}
 \alias{cmds-methods}
 \alias{cmds,RangedDataList-method}
+\alias{cmds,GRangesList-method}
 \title{Classical Multi-Dimensional Scaling}
 \description{
 \code{cmds} obtain the coordinates of the elements in \code{x} in a

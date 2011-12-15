@@ -44,6 +44,10 @@ Although relatively simple-minded, we found the tools to be
 extremely helpful in quality control assessment,
 routine pre-processing and analysis steps
 and in producing useful visualizations.
+When using the package please cite \cite{planet:2012}.
+The supplementary material of the paper should be a useful resource,
+as it contains a detailed description of the methods and additional examples
+(including ChIP-Seq, MNase-Seq and RNA-Seq) with R code.
 
 Emphasis is placed on ChIP-Seq alike experiments,
 but many functions are also useful for other kinds of sequencing experiments.
@@ -107,10 +111,14 @@ visual representation.
 Read coverage is a universal measure which can be computed
 efficiently for any type of sequencing data.
 We measure similarity between samples $i$ and $j$ with $\rho_{ij}$,
-the Pearson correlation between their log-coverages,
+the correlation between their log-coverages,
 and define their distance as $d_{ij}= 0.5 (1-\rho_{ij})$.
+Pearson, Spearman and Kendall correlation coefficients are available.
 We compute correlations in the log-scale to take into
 account that the coverage distribution is typically highly asymmetric.
+In principle, Spearman is more general as it captures non-linear
+associations, but in practice all options typically produce 
+very similar results.
 MDS is then used to plot the samples in a low-dimensional space,
 in a way such that the Euclidean distance between two points is closest
 to the Pearson distances.

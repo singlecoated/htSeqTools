@@ -79,3 +79,12 @@ function(intervals, chromosome, score, annot, aggregateFUN='median', maxDist=300
   return(ans)
 }
 )
+
+setMethod("mergeRegions",signature(intervals='GRanges'),
+  function(intervals, chromosome, score, annot, aggregateFUN='median', maxDist=300) {
+    intervals <- as(intervals,'RangedData')
+    ans <- mergeRegions(intervals,chromosome=chromosome,score=score,annot=annot,aggregateFUN=aggregateFUN,maxDist=maxDist)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)

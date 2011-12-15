@@ -3,6 +3,8 @@
 \alias{islandCounts-methods}
 \alias{islandCounts,RangedData-method}
 \alias{islandCounts,RangedDataList-method}
+\alias{islandCounts,GRanges-method}
+\alias{islandCounts,GRangesList-method}
 \title{Find genomic regions with high coverage and count number of reads
 overlapping each region in each sample}
 \description{

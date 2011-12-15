@@ -10,7 +10,7 @@ setMethod("alignPeaks",signature(x='RangedDataList', strand='character'),
 
 setMethod("alignPeaks",signature(x='RangedData',strand='character'),
   function(x, strand, npeaks=1000, bandwidth=150, mc.cores=1) {
-    strandnew <- lapply(values(x),function(z) z[,strand])
+    strandnew <- lapply(values(x),function(z) as.factor(z[,strand]))
     ans <- alignPeaks(x=ranges(x), strand=strandnew, npeaks=npeaks, bandwidth=bandwidth)
     ans <- RangedData(ans, values=values(x))
     colnames(ans) <- sub('values.','',colnames(ans))
@@ -98,3 +98,22 @@ setMethod("alignPeaks",signature(x='IRangesList',strand='list'),
     return(x)
   }
 )
+
+setMethod("alignPeaks",signature(x='GRanges',strand='character'),
+  function(x, strand, npeaks=1000, bandwidth=150, mc.cores=1) {
+    x <- as(x,'RangedData')
+    ans <- alignPeaks(x,strand=strand,npeaks=npeaks,bandwidth=bandwidth,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)
+
+setMethod("alignPeaks",signature(x='GRangesList'),
+  function(x, strand, npeaks=1000, bandwidth=150, mc.cores=1) {
+    x <- RangedDataList(lapply(x,function(y) as(y,'RangedData')))
+    ans <- alignPeaks(x,strand=strand,npeaks=npeaks,bandwidth=bandwidth,mc.cores=mc.cores)
+    ans <- as(ans,'GRangesList')
+    return(ans)
+  }
+)
+

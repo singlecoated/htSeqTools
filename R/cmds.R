@@ -85,3 +85,12 @@ corRle <- function(z1, z2, cor.method='pearson') {
   }
   cor(z1,z2)
 }
+
+setMethod("cmds", signature(x='GRangesList'),
+  function(x, k=2, logscale=TRUE, mc.cores=1, cor.method='pearson') {
+    x <- RangedDataList(lapply(x,function(y) as(y,'RangedData')))
+    ans <- cmds(x,k=k,logscale=logscale,mc.cores=mc.cores,cor.method=cor.method)
+    #ans <- as(ans,'GRangesList')
+    return(ans)
+  }
+)

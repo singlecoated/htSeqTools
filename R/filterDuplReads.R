@@ -35,3 +35,21 @@ setMethod("filterDuplReads",signature(x='RangedDataList'),
     return(ans)
   }
 )
+
+setMethod("filterDuplReads",signature(x='GRanges'),
+  function(x, maxRepeats, fdrOverAmp=.01, negBinomUse=.999, components=0, mc.cores=1) {
+    x <- as(x,'RangedData')
+    ans <- filterDuplReads(x,maxRepeats=maxRepeats,fdrOverAmp=fdrOverAmp,negBinomUse=negBinomUse,components=components,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)
+
+setMethod("filterDuplReads",signature(x='GRangesList'),
+  function(x, maxRepeats, fdrOverAmp=.01, negBinomUse=.999, components=0, mc.cores=1) {
+    x <- RangedDataList(lapply(x,function(y) as(y,'RangedData')))
+    ans <- filterDuplReads(x,maxRepeats=maxRepeats,fdrOverAmp=fdrOverAmp,negBinomUse=negBinomUse,components=components,mc.cores=mc.cores)
+    ans <- as(ans,'GRangesList')
+    return(ans)
+  }
+)

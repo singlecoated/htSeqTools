@@ -29,3 +29,23 @@ setMethod("extendRanges",signature(x='RangedDataList'),
     return(ans)
   }
 )
+
+
+setMethod("extendRanges",signature(x='GRanges'),
+  function(x,seqLen=200,chrlength,mc.cores=1) {
+    x <- as(x,'RangedData')
+    ans <- extendRanges(x,seqLen=seqLen,chrLength=chrLength,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)
+
+
+setMethod("extendRanges",signature(x='GRangesList'),
+  function(x,seqLen=200,chrlength,mc.cores=1) {
+    x <- RangedDataList(lapply(x,function(y) as(y,'RangedData')))
+    ans <- extendRanges(x,seqLen=seqLen,chrLength=chrLength,mc.cores=mc.cores)
+    ans <- as(ans,'GRangesList')
+    return(ans)
+  }
+)

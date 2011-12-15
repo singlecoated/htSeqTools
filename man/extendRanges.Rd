@@ -4,6 +4,8 @@
 \alias{extendRanges-methods}
 \alias{extendRanges,RangedData-method}
 \alias{extendRanges,RangedDataList-method}
+\alias{extendRanges,GRanges-method}
+\alias{extendRanges,GRangesList-method}
 \title{
 Extend reads or sequences by a user-specified number of bases.
 }

@@ -4,9 +4,11 @@
 \alias{stdPeakLocation-methods}
 \alias{stdPeakLocation,data.frame-method}
 \alias{stdPeakLocation,RangedData-method}
+\alias{stdPeakLocation,GRanges-method}
 \alias{PeakLocation-methods}
 \alias{PeakLocation,data.frame-method}
 \alias{PeakLocation,RangedData-method}
+\alias{PeakLocation,GRanges-method}
 \title{Peak density with respect to closest gene.}
 \description{
 \code{stdPeakLocation} plots the density of peaks with respect to the

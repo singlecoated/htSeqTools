@@ -5,9 +5,13 @@
 \alias{filterDuplReads-methods}
 \alias{filterDuplReads,RangedData-method}
 \alias{filterDuplReads,RangedDataList-method}
+\alias{filterDuplReads,GRanges-method}
+\alias{filterDuplReads,GRangesList-method}
 \alias{tabDuplReads-methods}
 \alias{tabDuplReads,RangedData-method}
 \alias{tabDuplReads,RangedDataList-method}
+\alias{tabDuplReads,GRanges-method}
+\alias{tabDuplReads,GRangesList-method}
 \title{ Detect and filter duplicated reads/sequences. }
 \description{
 \code{filterDuplReads} filters highly repeated sequences, i.e. with the same chromosome, start and

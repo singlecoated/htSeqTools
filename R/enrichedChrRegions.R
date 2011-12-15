@@ -64,6 +64,28 @@ setMethod("enrichedChrRegions", signature(hits1='RangedData', hits2='RangedData'
 }
 )
 
+
+setMethod("enrichedChrRegions", signature(hits1='GRanges', hits2='missing'),
+  function(hits1, hits2, chrLength, windowSize=10^4-1, fdr=0.05, nSims=10, mc.cores=1) {
+    hits1 <- as(hits1,'RangedData')
+    ans <- enrichedChrRegions(hits1=hits1,chrLength=chrLength,windowSize=windowSize,fdr=fdr,nSims=nSims,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)
+
+
+setMethod("enrichedChrRegions", signature(hits1='GRanges', hits2='GRanges'),
+  function(hits1, hits2, chrLength, windowSize=10^4-1, fdr=0.05, nSims=10, mc.cores=1) {
+    hits1 <- as(hits1,'RangedData')
+    hits2 <- as(hits2,'RangedData')
+    ans <- enrichedChrRegions(hits1=hits1,hits2=hits2,chrLength=chrLength,windowSize=windowSize,fdr=fdr,nSims,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)
+
+
 ## countHitsWindow
 #Count nb of hits (elements in x) in a window of specified size. Return RleList object with one elem for each chromosome
 setMethod("countHitsWindow", signature(x="RangedData"), function(x, chrLength, windowSize=10^4-1) {
@@ -74,6 +96,15 @@ setMethod("countHitsWindow", signature(x="RangedData"), function(x, chrLength, w
   peaksSmooth <- runsum(peaksRle, k=windowSize, endrule='constant')
   return(peaksSmooth)
 }
+)
+
+
+setMethod("countHitsWindow", signature(x="GRanges"),
+  function(x, chrLength, windowSize=10^4-1) {
+    x <- as(x,'RangedData')
+    ans <- countHitsWindow(x,chrLengths=chrLengths,windowSize=windowSize)
+    return(ans)
+  }
 )
 
 

@@ -97,3 +97,33 @@ function(regions, sample1, sample2, minHeight=5, space, mc.cores=1) {
   return(ans)
 }
 )
+
+setMethod("enrichedPeaks", signature(regions='GRanges', sample1='missing', sample2='missing'),
+  function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
+    regions <- as(regions,'RangedData')
+    ans <- enrichedPeaks(regions=regions,minHeight=minHeight,space=space,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)
+
+setMethod("enrichedPeaks", signature(regions='GRanges', sample1='GRanges', sample2='missing'),
+  function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
+    regions <- as(regions,'RangedData')
+    sample1 <- as(sample1,'RangedData')
+    ans <- enrichedPeaks(regions=regions,sample1=sample1,minHeight=minHeight,space=space,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)
+
+setMethod("enrichedPeaks", signature(regions='GRanges', sample1='GRanges', sample2='GRanges'),
+  function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
+    regions <- as(regions,'RangedData')
+    sample1 <- as(sample1,'RangedData')
+    sample2 <- as(sample2,'RangedData')
+    ans <- enrichedPeaks(regions,sample1=sample1,sample2=sample2,minHeight=minHeight,space=space,mc.cores=mc.cores)
+    ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)

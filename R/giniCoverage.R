@@ -1,5 +1,5 @@
 setMethod("giniCoverage", signature(sample='RangedDataList', species='missing', chrLengths='missing'),
-function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1, numSim=1) {
+function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, numSim=1) {
   chrNames<-unique(unlist(lapply(sample, names)))
 
   chrLengths<-lapply(sample, function(x){
@@ -43,7 +43,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1
 )
 
 setMethod("giniCoverage", signature(sample='RangedDataList', species='missing', chrLengths='integer'),
-function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1, numSim=1) {
+function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, numSim=1) {
         if (is.null(names(sample))) names(sample) <- paste('sample',1:length(sample),sep='')
 	giniList<-lapply(names(sample), function(x) giniCoverage(sample[[x]], seqName=x, mc.cores=mc.cores, mk.plot=mk.plot, chrLengths=chrLengths, numSim=numSim))
 	names(giniList)<-names(sample)
@@ -53,7 +53,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1
 )
 
 setMethod("giniCoverage", signature(sample='RangedDataList', species='character', chrLengths='missing'),
-function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1, numSim=1) {
+function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, numSim=1) {
 	require(BSgenome)
 	if(!(species %in% available.genomes())){ stop('\'species\' must be a valid BSgenome character string')}
 	else library(species, character.only=T, logical.return=T)
@@ -69,7 +69,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1
 )
 
 setMethod("giniCoverage", signature(sample='RangedData', species='missing', chrLengths='missing'),
-function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1, numSim=1) {
+function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths, numSim=1) {
     chrLengths<-unlist(lapply(sample, function(y) max(end(ranges(y)))))
     names(chrLengths)<-names(sample)								           
     gini<- giniCoverage(sample, seqName=seqName, mc.cores=mc.cores, mk.plot=mk.plot, chrLengths=chrLengths, numSim=numSim)
@@ -86,7 +86,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1
 )
 
 setMethod("giniCoverage", signature(sample='RangedData', species='character', chrLengths='missing'),
-function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1, numSim=1) {
+function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, numSim=1) {
     require(BSgenome)
     if(!(species %in% available.genomes())){ stop('\'species\' must be a valid BSgenome character string')}
     else library(species, character.only=T, logical.return=T)
@@ -99,7 +99,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1
 )
 
 setMethod("giniCoverage", signature(sample='RangedData', species='missing', chrLengths='integer'),
-function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1, numSim=1) {
+function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, numSim=1) {
 
   lorenzC <- function (x, n = rep(1, length(x)), plot = FALSE) 
 	{
@@ -258,4 +258,66 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1
  }
 )
 
-  
+setMethod("giniCoverage", signature(sample='GRanges', species='character', chrLengths='integer'),
+  function(sample, mc.cores=1, mk.plot=FALSE, seqName, species, chrLengths, numSim=1) {
+    sample <- as(sample,'RangedData')
+    ans <- giniCoverage(sample=sample,species=species,chrLengths=chrLengths,mc.cores=mc.cores,mk.plot=mk.plot,seqName=seqName,numSim=numSim)
+    return(ans)
+  }
+)
+
+setMethod("giniCoverage", signature(sample='GRanges', species='character', chrLengths='missing'),
+  function(sample, mc.cores=1, mk.plot=FALSE, seqName, species, chrLengths, numSim=1) {
+    sample <- as(sample,'RangedData')
+    ans <- giniCoverage(sample=sample,species=species,mc.cores=mc.cores,mk.plot=mk.plot,seqName=seqName,numSim=numSim)
+    return(ans)
+  }
+)
+
+setMethod("giniCoverage", signature(sample='GRanges', species='missing', chrLengths='integer'),
+  function(sample, mc.cores=1, mk.plot=FALSE, seqName, species, chrLengths, numSim=1) {
+    sample <- as(sample,'RangedData')
+    ans <- giniCoverage(sample=sample,chrLengths=chrLengths,mc.cores=mc.cores,mk.plot=mk.plot,seqName=seqName,numSim=numSim)
+    return(ans)
+  }
+)
+
+setMethod("giniCoverage", signature(sample='GRanges', species='missing', chrLengths='missing'),
+  function(sample, mc.cores=1, mk.plot=FALSE, seqName, species, chrLengths, numSim=1) {
+    sample <- as(sample,'RangedData')
+    ans <- giniCoverage(sample=sample,mc.cores=mc.cores,mk.plot=mk.plot,seqName=seqName,numSim=numSim)
+    return(ans)
+  }
+)
+
+setMethod("giniCoverage", signature(sample='GRangesList', species='character', chrLengths='integer'),
+  function(sample, mc.cores=1, mk.plot=FALSE, seqName, species, chrLengths, numSim=1) {
+    sample <- RangedDataList(lapply(sample,function(y) as(y,'RangedData')))
+    ans <- giniCoverage(sample=sample,species=species,chrLengths=chrLengths,mc.cores=mc.cores,mk.plot=mk.plot,seqName=seqName,numSim=numSim)
+    return(ans)
+  }
+)
+
+setMethod("giniCoverage", signature(sample='GRangesList', species='character', chrLengths='missing'),
+  function(sample, mc.cores=1, mk.plot=FALSE, seqName, species, chrLengths, numSim=1) {
+    sample <- RangedDataList(lapply(sample,function(y) as(y,'RangedData')))
+    ans <- giniCoverage(sample=sample,species=species,mc.cores=mc.cores,mk.plot=mk.plot,seqName=seqName,numSim=numSim)
+    return(ans)
+  }
+)
+
+setMethod("giniCoverage", signature(sample='GRangesList', species='missing', chrLengths='integer'),
+  function(sample, mc.cores=1, mk.plot=FALSE, seqName, species, chrLengths, numSim=1) {
+    sample <- RangedDataList(lapply(sample,function(y) as(y,'RangedData')))
+    ans <- giniCoverage(sample=sample,chrLengths=chrLengths,mc.cores=mc.cores,mk.plot=mk.plot,seqName=seqName,numSim=numSim)
+    return(ans)
+  }
+)
+
+setMethod("giniCoverage", signature(sample='GRangesList', species='missing', chrLengths='missing'),
+  function(sample, mc.cores=1, mk.plot=FALSE, seqName, species, chrLengths, numSim=1) {
+    sample <- RangedDataList(lapply(sample,function(y) as(y,'RangedData')))
+    ans <- giniCoverage(sample=sample,mc.cores=mc.cores,mk.plot=mk.plot,seqName=seqName,numSim=numSim)
+    return(ans)
+  }
+)

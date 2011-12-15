@@ -4,6 +4,8 @@
 \alias{ssdCoverage,IRangesList-method}
 \alias{ssdCoverage,RangedData-method}
 \alias{ssdCoverage,RangedDataList-method}
+\alias{ssdCoverage,GRanges-method}
+\alias{ssdCoverage,GRangesList-method}
 \title{Standardized SD of the genomic coverage}
 \description{
   Compute variability of the genomic coverage,

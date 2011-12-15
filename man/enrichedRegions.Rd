@@ -6,6 +6,10 @@
 \alias{enrichedRegions,RangedDataList,missing,missing,ANY,ANY-method}
 \alias{enrichedRegions,missing,missing,RangedData,ANY,missing-method}
 \alias{enrichedRegions,missing,missing,RangedData,ANY,numeric-method}
+\alias{enrichedRegions,GRanges,GRanges,missing,ANY,ANY-method}
+\alias{enrichedRegions,GRanges,missing,missing,ANY,ANY-method}
+\alias{enrichedRegions,GRangesList,missing,missing,ANY,ANY-method}
+\alias{enrichedRegions,missing,missing,GRanges,ANY,ANY-method}
 \title{Find significantly enriched regions in sequencing experiments.}
 \description{
   Find regions with a significant accumulation of reads in a sequencing experiment.

@@ -4,6 +4,9 @@
 \alias{alignPeaks,IRangesList,list-method}
 \alias{alignPeaks,RangedData,character-method}
 \alias{alignPeaks,RangedDataList,character-method}
+\alias{alignPeaks,GRanges,character-method}
+\alias{alignPeaks,GRangesList-method}
+\alias{alignPeaks,GRangesList,ANY-method}
 \title{Align peaks in a ChIP-Seq experiment by removing the strand
   specific bias.}
 \description{

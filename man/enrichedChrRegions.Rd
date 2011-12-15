@@ -3,6 +3,8 @@
 \alias{enrichedChrRegions-methods}
 \alias{enrichedChrRegions,RangedData,missing-method}
 \alias{enrichedChrRegions,RangedData,RangedData-method}
+\alias{enrichedChrRegions,GRanges,GRanges-method}
+\alias{enrichedChrRegions,GRanges,missing-method}
 \title{
 Find chromosomal regions with a high concentration of hits.
 }

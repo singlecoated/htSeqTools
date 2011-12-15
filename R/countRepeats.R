@@ -46,3 +46,12 @@ setMethod(countRepeats, signature(reads='IRanges'), function(reads) {
   ans
 }
 )
+
+setMethod(countRepeats, signature(reads='GRanges'),
+  function(reads,mc.cores=1) {
+    reads <- as(reads,'RangedData')
+    ans <- countRepeats(reads,mc.cores=mc.cores)
+    #ans <- as(ans,'GRanges')
+    return(ans)
+  }
+)    

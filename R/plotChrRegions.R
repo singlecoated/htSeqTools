@@ -1,5 +1,6 @@
 plotChrRegions <- function(regions, chrLength, markColor='red', ...) {
-  if (!is(regions,'RangedData')) stop("Argument regions must be of class 'RangedData'")
+  if (!(class(regions) %in% c('RangedData','GRanges'))) stop("Argument regions must be of class 'RangedData' or 'GRanges'")
+  if (class(regions)=='GRanges') regions <- as(regions,'RangedData')
   nchrom <- length(chrLength)
   ypos <- nchrom:1; names(ypos) <- names(chrLength)
   plot(NA,NA,xaxt='n',yaxt='n',xlim=c(-.15,1),ylim=c(0,nchrom+1),xlab='',ylab='',...)

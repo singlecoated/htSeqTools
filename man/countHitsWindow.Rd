@@ -2,6 +2,7 @@
 \alias{countHitsWindow}
 \alias{countHitsWindow-methods}
 \alias{countHitsWindow,RangedData-method}
+\alias{countHitsWindow,GRanges-method}
 \title{
 Compute number of hits in a moving window along the chromosome.
 }
