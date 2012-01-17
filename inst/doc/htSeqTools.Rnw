@@ -82,6 +82,29 @@ only uniquely mapping reads with at most 2 mismatches in the first 28 bases were
 We do not give any further details about the experiment, as the results
 have not yet been published.
 
+You can easily build a \texttt{RangedDataList} to store multiple \texttt{RangedData}
+objects (coming from different BED files read as data frames for
+instance). We will extract two elements from htSample
+in order to simulate a batch of 2 externally loaded samples. Ctrl and
+IP1 will be two data frames with 'space', 'start', 'end', 'width', and
+'strand' columns. Please note that 'space', 'start' and 'end' are necessary in order to directly generate a \texttt{RangedData}
+object from a data frame. The 'width' column will not be
+present in the output by default, and all other columns will be added to the
+\texttt{RangedData} object as additional value columns ('strand' in
+our case).
+
+\footnotesize
+<<import2>>=
+Ctrl=as.data.frame(htSample[[1]])
+IP1=as.data.frame(htSample[[2]])
+head(Ctrl)
+head(RangedData(Ctrl))
+htSample2 <- RangedDataList(Ctrl=RangedData(Ctrl),IP1=RangedData(IP1))
+htSample2
+head(htSample2[['Ctrl']])
+@ 
+\normalsize
+
 \section{Quality control}
 \label{sec:quality_control}
 

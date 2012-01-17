@@ -1,6 +1,6 @@
 Package: htSeqTools 
-Version: 1.1.1
-Date: 2011-10-14
+Version: 1.1.2
+Date: 2012-01-17
 Title: Quality Control, Visualization and Processing for High-Throughput Sequencing data 
 Author: Evarist Planet, Camille Stephan-Otto, Oscar Reina, Oscar Flores, David Rossell
 Maintainer: Oscar Reina <oscar.reina@irbbarcelona.org>

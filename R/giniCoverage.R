@@ -194,7 +194,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, n
           if ('multicore' %in% loadedNamespaces()) {
             rangesl<-multicore::mclapply(1:length(chrReads), function(i) {
                 reads<-sample.int(chrLen[i], as.integer(chrReads[i]), replace=T)
-                len<-floor(mean(width(x[1:min(10000, chrLen[i]),])))
+                len<-floor(mean(width(x[1:min(nrow(x), 10000, chrLen[i]),])))
                 ranges<-IRanges(start=reads, width=rep(len, length(reads)))
                 ranges
         }, mc.cores=mc.cores
@@ -203,7 +203,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, n
           } else{
              rangesl<-lapply(1:length(chrReads), function(i) {
                 reads<-sample.int(chrLen[i], as.integer(chrReads[i]), replace=T)
-                len<-floor(mean(width(x[1:min(10000, chrLen[i]),])))
+                len<-floor(mean(width(x[1:min(nrow(x), 10000, chrLen[i]),])))
                 ranges<-IRanges(start=reads, width=rep(len, length(reads)))
                 ranges
               })
