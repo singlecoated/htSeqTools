@@ -1,3 +1,22 @@
+VERSION 1.1.3
+- Fixed bug in gini for method with no chromosome lengths
+
+VERSION 1.1.2
+- Add methods for objects of class GRanges and GRangesList.
+- Add set.seed to vignette.
+- Use pvec instead of mclapply in tabDuplReads and filterDuplReads.
+- Correct rpkm form enrichedRegions and remove it from enrichedPeaks
+- Fixed giniCoverage for ranges with low numbers of reads
+
+VERSION 1.1.1
+- Adjusted parallel computing in enrichedPeaks so that it no longer spans an uncontrolled number of child processes when mc.cores>1
+- Added arguments "labels" and "cex.text" to the plot method for cmdsFit objects.
+- Added monotonicity contraint to filterDuplReads and fdrEnrichedCounts to ensure that the estimated FDR decreases with the number of repeats
+- Fixed overflow problem in enrichedChrRegions which occurred for long genomes (e.g. human)
+- Adjusted behavior of stdPeakLocation so that it is consistent with PeakLocation
+- Fixed bug in RPKM calculation by enrichedRegions
+- Added option to compute Spearman correlations in cmds
+
 VERSION 0.99
 - Adapted enrichedChrRegions to adapt to change in IRanges behavior
 - Fixed bug in PeakLocation and stdPeakLocation when strand information was stored in variables of type factor

@@ -1,5 +1,6 @@
 setMethod("giniCoverage", signature(sample='RangedDataList', species='missing', chrLengths='missing'),
 function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, numSim=1) {
+sample<-lapply(sample, function(x) x[unique(as.character(space(x)))])
   chrNames<-unique(unlist(lapply(sample, names)))
 
   chrLengths<-lapply(sample, function(x){
@@ -70,6 +71,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, 
 
 setMethod("giniCoverage", signature(sample='RangedData', species='missing', chrLengths='missing'),
 function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths, numSim=1) {
+ sample<-sample[unique(as.character(space(sample)))]
     chrLengths<-unlist(lapply(sample, function(y) max(end(ranges(y)))))
     names(chrLengths)<-names(sample)								           
     gini<- giniCoverage(sample, seqName=seqName, mc.cores=mc.cores, mk.plot=mk.plot, chrLengths=chrLengths, numSim=numSim)
@@ -185,16 +187,18 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, n
 
  #Simulate data with same number of reads and genome length
    sampleRange<-function(x, chrLen, mc.cores){
-	chrReads<-lapply(x, nrow)
+	#chrReads<-unlist(lapply(x, nrow))
+	#chrReads[chrReads==0]<-1
 	chrLen<-chrLen[names(x)]
-	        totReads<-sum(unlist(chrReads))
-	        chrReads<-totReads*(chrLen/sum(as.numeric(chrLen)))
+	#totReads<-sum(unlist(chrReads))
+	totReads<-nrow(x)
+	chrReads<-totReads*(chrLen/sum(as.numeric(chrLen)))
         if (mc.cores>1) require(multicore)
         if(mc.cores>1) {
           if ('multicore' %in% loadedNamespaces()) {
             rangesl<-multicore::mclapply(1:length(chrReads), function(i) {
                 reads<-sample.int(chrLen[i], as.integer(chrReads[i]), replace=T)
-                len<-floor(mean(width(x[1:min(nrow(x), 10000, chrLen[i]),])))
+		len<-floor(mean(width(x[1:min(nrow(x), 10000, chrLen[i]),])))
                 ranges<-IRanges(start=reads, width=rep(len, length(reads)))
                 ranges
         }, mc.cores=mc.cores

@@ -51,7 +51,7 @@ setMethod("enrichedChrRegions", signature(hits1='RangedData', hits2='RangedData'
   fdrest <- rhits/obshits; fdrest <- ifelse(fdrest>1,1,fdrest)
   cutoff <- cutseq[which(fdrest<fdr)[1]]
   if (!is.na(cutoff)) {
-    regionsPos <- RangedData(slice(countDif,lower=cutoff,includeLower=TRUE),rangesOnly=TRUE)
+    regionsPos <- RangedData(slice(countDif,lower=cutoff,includeLower=TRUE,rangesOnly=TRUE))
     countDifNeg <- -1*countDif; names(countDifNeg) <- names(countDif)
     regionsNeg <- RangedData(slice(countDifNeg,lower=cutoff,includeLower=TRUE,rangesOnly=TRUE))
     regionsPos[['direction']] <- rep(1,nrow(regionsPos))
