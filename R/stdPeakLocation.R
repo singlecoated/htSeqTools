@@ -1,14 +1,14 @@
 setMethod("stdPeakLocation", signature(x='data.frame'),
-function(x, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance relative to feature length', xaxt='n', xlim=c(-.25,1.5), densityType='kernel', nbreaks=10, ...) {
+function(x, peakDistance=1000, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance relative to feature length', xaxt='n', xlim=c(-.25,1.5), densityType='kernel', nbreaks=10, ...) {
   if (!missing(distance)) distance <- x[,distance]
-  stdPeakLocationBase(st= x$start, end=x$end, startpos= x[,startpos], endpos=x[,endpos], strand=x[,strand], distance=distance, main=main, xlab=xlab, xaxt=xaxt, xlim=xlim, densityType=densityType, nbreaks=nbreaks, ...)  
+  stdPeakLocationBase(st= x$start, end=x$end, startpos= x[,startpos], endpos=x[,endpos], strand=x[,strand], distance=distance, peakDistance=peakDistance, main=main, xlab=xlab, xaxt=xaxt, xlim=xlim, densityType=densityType, nbreaks=nbreaks, ...)  
 }
 )
 
 setMethod("stdPeakLocation", signature(x='RangedData'),
-function(x, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance relative to feature length', xaxt='n', xlim=c(-.25,1.5), densityType='kernel', nbreaks=10, ...) {
+function(x, peakDistance=1000, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance relative to feature length', xaxt='n', xlim=c(-.25,1.5), densityType='kernel', nbreaks=10, ...) {
   if (!missing(distance)) distance <- x[[distance]]
-  stdPeakLocationBase(st= start(x), end=end(x), startpos=x[[startpos]], endpos=x[[endpos]], strand=x[[strand]], distance=distance, main=main, xlab=xlab, xaxt=xaxt, xlim=xlim, densityType=densityType, nbreaks=nbreaks, ...)
+  stdPeakLocationBase(st= start(x), end=end(x), startpos=x[[startpos]], endpos=x[[endpos]], strand=x[[strand]], distance=distance, peakDistance=peakDistance, main=main, xlab=xlab, xaxt=xaxt, xlim=xlim, densityType=densityType, nbreaks=nbreaks, ...)
 }
 )
 
@@ -25,7 +25,7 @@ dist2midpnt <- function(st,end,startpos,endpos,strand) {
 }
 
 
-stdPeakLocationBase <- function(st, end, startpos, endpos, strand, distance, main='', xlab='Distance relative to feature length', xaxt='n', xlim=c(-.25,1.5), densityType='kernel', nbreaks=10, ...) {
+stdPeakLocationBase <- function(st, end, startpos, endpos, strand, distance, peakDistance, main='', xlab='Distance relative to feature length', xaxt='n', xlim=c(-.25,1.5), densityType='kernel', nbreaks=10, ...) {
   if (missing(distance)) {
     distance <- dist2midpnt(st=st,end=end,startpos=startpos,endpos=endpos,strand=strand)
   }
@@ -48,21 +48,21 @@ stdPeakLocationBase <- function(st, end, startpos, endpos, strand, distance, mai
 
 
 setMethod("PeakLocation", signature(x='data.frame'),
-function(x, peakDistance=10^4, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance (bp)', densityType='kernel',breaks,...) {
+function(x, peakDistance=1000, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance (bp)', densityType='kernel',breaks,...) {
   if (!missing(distance)) distance <- x[[distance]]
   PeakLocationBase(st= x$start, end=x$end, startpos= x[,startpos], endpos=x[,endpos], strand=x[,strand], distance=distance, peakDistance=peakDistance, main=main, xlab=xlab, densityType=densityType, breaks=breaks, ...)
 }
 )
 
 setMethod("PeakLocation", signature(x='RangedData'),
-function(x, peakDistance=10^4, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance (bp)', densityType='kernel', breaks, ...) {
+function(x, peakDistance=1000, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance (bp)', densityType='kernel', breaks, ...) {
   if (!missing(distance)) distance <- x[[distance]]
   PeakLocationBase(st= start(x), end=end(x), startpos=x[[startpos]], endpos=x[[endpos]], strand=x[[strand]], distance=distance, peakDistance=peakDistance, main=main, xlab=xlab, densityType=densityType, breaks=breaks, ...)
 }
 )
 
 
-PeakLocationBase <- function(st, end, startpos, endpos, strand, distance, peakDistance=10^4, main='', xlab='Distance (bp)',densityType='Kernel',breaks,...) {
+PeakLocationBase <- function(st, end, startpos, endpos, strand, distance, peakDistance=1000, main='', xlab='Distance (bp)',densityType='Kernel',breaks,...) {
   if (missing(distance)) {
     distance <- dist2midpnt(st=st,end=end,startpos=startpos,endpos=endpos,strand=strand)
   }
@@ -90,7 +90,7 @@ setMethod("stdPeakLocation", signature(x='GRanges'),
 )
 
 setMethod("PeakLocation", signature(x='GRanges'),
-  function(x, peakDistance=10^4, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance (bp)', densityType='kernel', breaks, ...) {
+  function(x, peakDistance=1000, startpos='start_position', endpos='end_position', strand='strand', distance, main='', xlab='Distance (bp)', densityType='kernel', breaks, ...) {
     x <- as(x,'RangedData')
     ans <- PeakLocation(x,peakDistance=peakDistance,startpos=startpos,endpos=endpos,strand=strand,distance=distance,main=main,xlab=xlab,densityType=densityType,breaks=breaks,...)
     return(ans)

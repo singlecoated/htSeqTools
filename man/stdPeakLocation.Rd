@@ -9,6 +9,9 @@
 \alias{PeakLocation,data.frame-method}
 \alias{PeakLocation,RangedData-method}
 \alias{PeakLocation,GRanges-method}
+\alias{plotMeanCoverage}
+\alias{plotMeanCoverage-methods}
+\alias{plotMeanCoverage,RleList,RangedData-method}
 \title{Peak density with respect to closest gene.}
 \description{
 \code{stdPeakLocation} plots the density of peaks with respect to the
@@ -18,9 +21,12 @@ comparable.
 
 \code{PeakLocation} produces the same plot in non-standardized coordinates (i.e. distances
 are measured in base pairs).
+
+\code{plotMeanCoverage} plots the mean coverage in a series of selected
+genomic regions.
 }
 \section{Methods}{
-Methods for \code{stdPeakLocation} and \code{PeakLocation}
+Methods for \code{stdPeakLocation}, \code{PeakLocation}
 
 \describe{
 \item{\code{signature(x = "data.frame")}}{ The data frame should contain
@@ -33,21 +39,34 @@ Methods for \code{stdPeakLocation} and \code{PeakLocation}
   variables \code{x[['txStart']]}, \code{x[['txEnd']]} indicating the
   transcription start/end of the closest gene and
   \code{x[['strand']]} indicating the strand.}
-}}
+}
+
+Methods for \code{plotMeanCoverage}
+
+\describe{
+\item{\code{signature(cover="RleList", x="RangedData")}}{ \code{cover}
+  contains the coverage and \code{x} the genomic regions of interest. }
+}
+
+}
 \usage{
-stdPeakLocation(x, startpos='start_position', endpos='end_position',
+stdPeakLocation(x, peakDistance=1000, startpos='start_position', endpos='end_position',
 strand='strand', distance, main='', xlab='Distance relative to feature length', xaxt='n',
   xlim=c(-1,2), densityType="kernel", nbreaks=10, ...)
 
 PeakLocation(x, peakDistance=1000, startpos='start_position', endpos='end_position',
 strand='strand', distance, main='', xlab='Distance (bp)',
   densityType="kernel", breaks, ...)
+
+plotMeanCoverage(cover, x, upstreambp=1000, downstreambp=5000, startpos='start_position', endpos='end_position', normalize=FALSE, main='', xlab='(bp)', ylab='Average coverage', ...)
 }
 \arguments{
 \item{x}{A \code{RangedData} or \code{data.frame} indicating peak start and end in
   \code{start} and \code{end}, and start and end of
   the closest genomic feature (e.g. gene) in \code{startpos} and
   \code{endpos}.}
+\item{cover}{An \code{RleList} object containing the coverage, as
+  returned by the function \code{coverage}.}
 \item{peakDistance}{Peaks more than \code{peakDistance} bases upstream
   or more than \code{3*peakDistance} downstream of the closest feature are discarded.}
 \item{startpos}{Name of the variable storing the start position of the closest genomic feature.}
@@ -58,6 +77,7 @@ strand='strand', distance, main='', xlab='Distance (bp)',
   between the feature start and the mid-point of the peak is computed.}
 \item{main}{Graphical parameter passed on to \code{plot}.}
 \item{xlab}{Graphical parameter passed on to \code{plot}.}
+\item{ylab}{Graphical parameter passed on to \code{plot}.}
 \item{xaxt}{Graphical parameter passed on to \code{plot}.}
 \item{xlim}{In \code{stdPeakLocation} the x-axis limit is set to
   \code{xlim*peakDistance}. }
@@ -68,6 +88,14 @@ strand='strand', distance, main='', xlab='Distance (bp)',
 \item{breaks}{This parameter will be passed to the \code{hist} plotting
   function. It will not be used if \code{densityType} is different from
   "hist".}
+\item{upstreambp}{Number of bp upstream of the TSS where the coverage
+  should be computed}
+\item{downstreambp}{Number of bp downstream of the TSS where the
+  coverage should be computed}
+\item{normalize}{When set to \code{TRUE} the average coverage in each
+  position is divided by the average across all positions. This is
+  useful when trying to super-impose data from several experiments that
+  had different read coverage.}
 \item{...}{Further parameters passed on to \code{plot}.}
 }
 \value{

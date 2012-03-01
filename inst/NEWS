@@ -1,4 +1,5 @@
 VERSION 1.1.3
+- Added plotMeanCoverage
 - Fixed bug in gini for method with no chromosome lengths
 
 VERSION 1.1.2
