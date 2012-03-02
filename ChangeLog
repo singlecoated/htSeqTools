@@ -1,4 +1,5 @@
 Version 1.1.3
+- Fixed bug in alignPeaks (no longer directly accessing matchMatrix slot of RangesMatchingList object)
 - Added plotMeanCoverage
 - Fixed bug in gini for method with no chromosome lengths
 Version 1.1.2
