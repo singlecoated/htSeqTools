@@ -50,8 +50,8 @@ setMethod("alignPeaks",signature(x='IRangesList',strand='list'),
       if (!is.null(y)) {
         # o <- findOverlaps(y,query=x,multiple=TRUE)
         o <- findOverlaps(y,query=x, select='all') # Removed by Oscar on may 19. Check complained with unused argument(s) (multiple = TRUE)
-        midpoint <- start(x)[o@matchMatrix[,'query']] - .5*(start(y)[o@matchMatrix[,'subject']]+end(y)[o@matchMatrix[,'subject']])
-        strandSel <- strand[o@matchMatrix[,'query']]
+        midpoint <- start(x)[as.matrix(o)[,'query']] - .5*(start(y)[as.matrix(o)[,'subject']]+end(y)[as.matrix(o)[,'subject']])
+        strandSel <- strand[as.matrix(o)[,'query']]
       } else {
         midpoint <- strandSel <- NULL
       }
