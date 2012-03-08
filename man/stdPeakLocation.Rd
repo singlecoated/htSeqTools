@@ -58,7 +58,9 @@ PeakLocation(x, peakDistance=1000, startpos='start_position', endpos='end_positi
 strand='strand', distance, main='', xlab='Distance (bp)',
   densityType="kernel", breaks, ...)
 
-plotMeanCoverage(cover, x, upstreambp=1000, downstreambp=5000, startpos='start_position', endpos='end_position', normalize=FALSE, main='', xlab='(bp)', ylab='Average coverage', ...)
+plotMeanCoverage(cover, x, upstreambp=1000, downstreambp=5000,
+startpos='start_position', endpos='end_position', normalize=FALSE,
+smooth=FALSE, span=0.05, main='', xlab='(bp)', ylab='Average coverage', ...)
 }
 \arguments{
 \item{x}{A \code{RangedData} or \code{data.frame} indicating peak start and end in
@@ -96,6 +98,10 @@ plotMeanCoverage(cover, x, upstreambp=1000, downstreambp=5000, startpos='start_p
   position is divided by the average across all positions. This is
   useful when trying to super-impose data from several experiments that
   had different read coverage.}
+\item{smooth}{If set to \code{TRUE}, the average coverage is smooth by
+  calling \code{loess}.}
+\item{span}{Parameter controlling smoothing, passed on to
+  \code{loess}. Larger values indicate more smoothing.}
 \item{...}{Further parameters passed on to \code{plot}.}
 }
 \value{

@@ -34,6 +34,8 @@ setMethod("cmds", signature(x='RangedDataList'), function(x, k=2, logscale=TRUE,
   } else {
     d <- lapply(index, function(z) corRleList(cover[[z[1]]], cover[[z[2]]], cor.method=cor.method))
   }
+  # Remove empty chromosomes
+  cover <- lapply(cover, function(samplecov) samplecov[unlist(lapply(samplecov,length))!=0])
   #
   r <- diag(length(cover))
   for (i in 1:length(index)) {
