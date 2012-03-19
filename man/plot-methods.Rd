@@ -1,19 +1,21 @@
 \name{plot-methods}
 \docType{methods}
-\alias{plot,cmdsFit,ANY-method}
-\alias{plot,gridCover,ANY-method}
-\title{ Methods for Function plot in Package `htSeq' }
+\alias{plot,cmdsFit-method}
+\alias{plot,gridCover-method}
+\title{
+Methods for Function plot in Package `htSeqTools'
+}
 \description{
- Methods for function \code{plot} in Package `htSeq'
+ Methods for function \code{plot} in Package `htSeqTools'
 }
 \section{Methods}{
 \describe{
 
-\item{\code{signature(x = "cmdsFit", y = "ANY")}}{
+\item{\code{signature(x = "cmdsFit")}}{
 Produces a Multi-Dimensional scaling plot. See \code{cmds} for details.
 }
 
-\item{\code{signature(x = "gridCover", y = "ANY")}}{
+\item{\code{signature(x = "gridCover")}}{
 Plots the average coverage for each point in the grid. See
 \code{gridCover} for details.
 }
