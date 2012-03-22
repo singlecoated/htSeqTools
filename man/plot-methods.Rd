@@ -1,6 +1,7 @@
 \name{plot-methods}
 \docType{methods}
 \alias{plot,cmdsFit-method}
+\alias{plot,cmdsFit,ANY-method}
 \alias{plot,gridCover-method}
 \title{
 Methods for Function plot in Package `htSeqTools'
