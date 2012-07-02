@@ -1,7 +1,12 @@
-Version 1.1.5
+VERSION 1.3.1
+- Fixed bug in plotMeanCoverage
+
+VERSION 1.1.5
 - Added missing documentation
+
 VERSION 1.1.4
 - Fixed bug in cmds for method with empty chromosomes
+
 VERSION 1.1.3
 - Fixed bug in alignPeaks (no longer directly accessing matchMatrix slot of RangesMatchingList object)
 - Added plotMeanCoverage
