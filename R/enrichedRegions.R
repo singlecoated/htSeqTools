@@ -5,9 +5,10 @@ function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, e
     #LR test
     countsGroup <- as.data.frame(as(values(counts),"DataFrame"))[,,drop=FALSE]
     lrt <- rowLogRegLRT(counts=countsGroup, exact=exact, p.adjust.method=p.adjust.method)
+    lrt$pvals[is.na(lrt$pvals)] <- 1 #NAs happen when counts in all samples are 0
     sel <- lrt$pvals<=pvalFilter
     counts[['pvalue']] <- lrt$pvals
-    rpkm <- 10^9 * countsGroup / (as.matrix(width(counts)) %*% t(as.matrix(mappedreads)))
+    rpkm <- countsGroup / ((as.matrix(width(counts))/10^9) %*% t(as.matrix(mappedreads)))
     names(rpkm) <- paste('rpkm',names(rpkm),sep='.')
     values(counts) <- DataFrame(values(counts), rpkm)
     ans <- counts[sel,]
@@ -19,22 +20,22 @@ function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, e
 )
 
 setMethod("enrichedRegions", signature(sample1='missing',sample2='missing',regions='RangedData',mappedreads='missing'),
-function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE, mc.cores=1) {
+function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE, mc.cores=1) {
   mappedreads <- colSums(as.data.frame(values(regions))[,c('sample1','sample2')])
   enrichedRegions(regions=regions, minReads=minReads, mappedreads=mappedreads, pvalFilter=pvalFilter, exact=exact, p.adjust.method=p.adjust.method, twoTailed=twoTailed, mc.cores=mc.cores)
 }
 )
 
 setMethod("enrichedRegions", signature(sample1='RangedDataList',sample2='missing',regions='missing'),
-function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
+function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
   regions <- islandCounts(sample1, minReads=minReads, mc.cores=mc.cores)
   mappedreads <- sapply(sample1,nrow)
-  enrichedRegions(sample1=sample1, pvalFilter=pvalFilter, exact=exact, p.adjust.method=p.adjust.method, mc.cores=mc.cores, mappedreads=mappedreads)
+  enrichedRegions(regions=regions, pvalFilter=pvalFilter, exact=exact, p.adjust.method=p.adjust.method, mc.cores=mc.cores, mappedreads=mappedreads)
 }
 )
 
 setMethod("enrichedRegions", signature(sample1='RangedData',sample2='RangedData',regions='missing'),
-function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
+function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
   regions <- islandCounts(RangedDataList(sample1,sample2),minReads=minReads,mc.cores=mc.cores)
   mappedreads <- c(nrow(sample1),nrow(sample2))
   regions <- enrichedRegions(regions=regions, mappedreads=mappedreads, pvalFilter=1, exact=exact, p.adjust.method=p.adjust.method, mc.cores=mc.cores)
@@ -48,13 +49,13 @@ function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p
 )
 
 setMethod("enrichedRegions", signature(sample1='RangedData',sample2='missing',regions='missing'),
-function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
+function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
   regions <- islandCounts(sample1, minReads=minReads, mc.cores=mc.cores)
   colnames(values(regions)) <- 'n'
   if (nrow(regions)>0) {
     n <- sum(regions[['n']]); p <- 1/length(regions[['n']])
     pvals <- pbinom(regions[['n']] - 1, n, p, lower.tail = FALSE)
-    regions[['rpkm']] <- 10^9 * regions[['n']] / (width(regions) * nrow(sample1))
+    regions[['rpkm']] <- regions[['n']] / ((width(regions)/10^9) * nrow(sample1))
     regions[['pvalue']] <- p.adjust(unlist(pvals),method=p.adjust.method)
     regions <- regions[regions[['pvalue']]<=pvalFilter,]
   }
@@ -63,7 +64,7 @@ function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p
 )
 
 setMethod("enrichedRegions", signature(sample1='GRanges',sample2='missing',regions='missing'),
-  function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
+  function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
     sample1 <- as(sample1,'RangedData')
     ans <- enrichedRegions(sample1=sample1,minReads=minReads,pvalFilter=pvalFilter,exact=exact,p.adjust.method=p.adjust.method,twoTailed=twoTailed,mc.cores=mc.cores)
     return(ans)
@@ -71,7 +72,7 @@ setMethod("enrichedRegions", signature(sample1='GRanges',sample2='missing',regio
 )
 
 setMethod("enrichedRegions", signature(sample1='GRanges',sample2='GRanges',regions='missing'),
-  function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
+  function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
     sample1 <- as(sample1,'RangedData')
     sample2 <- as(sample2,'RangedData')
     ans <- enrichedRegions(sample1=sample1,sample2=sample2,minReads=minReads,pvalFilter=pvalFilter,exact=exact,p.adjust.method=p.adjust.method,twoTailed=twoTailed,mc.cores=mc.cores)
@@ -81,7 +82,7 @@ setMethod("enrichedRegions", signature(sample1='GRanges',sample2='GRanges',regio
 )
 
 setMethod("enrichedRegions", signature(sample1='missing',sample2='missing',regions='GRanges'),
-  function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
+  function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
     regions <- as(regions,'RangedData')
     ans <- enrichedRegions(regions=regions,minReads=minReads,pvalFilter=pvalFilter,exact=exact,p.adjust.method=p.adjust.method,twoTailed=twoTailed,mc.cores=mc.cores)
     ans <- as(ans,'GRanges')
@@ -90,7 +91,7 @@ setMethod("enrichedRegions", signature(sample1='missing',sample2='missing',regio
 )
 
 setMethod("enrichedRegions", signature(sample1='GRangesList',sample2='missing',regions='missing'),
-  function(sample1, sample2, regions, minReads=10, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
+  function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, exact=FALSE, p.adjust.method='none', twoTailed=FALSE,  mc.cores=1) {
     sample1 <- RangedDataList(lapply(sample1,function(y) as(y,'RangedData')))
     ans <- enrichedRegions(sample1=sample1,minReads=minReads,pvalFilter=pvalFilter,exact=exact,p.adjust.method=p.adjust.method,twoTailed=twoTailed,mc.cores=mc.cores)
     ans <- as(ans,'GRangesList')
