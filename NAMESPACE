@@ -6,7 +6,7 @@ importFrom("MASS", "isoMDS")
 importFrom("BSgenome", "available.genomes")
 importFrom("GenomicRanges", "seqlengths")
 
-exportMethods(alignPeaks, extendRanges, filterDuplReads, mergeRegions, enrichedRegions, enrichedPeaks, stdPeakLocation, PeakLocation, listOverlap, tabDuplReads, cmds, cmdsFit, islandCounts, ssdCoverage, giniCoverage, regionsCoverage, stdGrid, plot, lines, enrichedChrRegions, countHitsWindow, getViewsInfo, getCover, plotMeanCoverage)
-export(fdrEnrichedCounts, gridCoverage, plotChrRegions, coverageDiff, rowLogRegLRT)
+exportMethods(alignPeaks, extendRanges, filterDuplReads, mergeRegions, enrichedRegions, enrichedPeaks, stdPeakLocation, PeakLocation, listOverlap, tabDuplReads, cmds, cmdsFit, islandCounts, ssdCoverage, giniCoverage, regionsCoverage, stdGrid, plot, lines, enrichedChrRegions, countHitsWindow, getViewsInfo, getCover, plotMeanCoverage, findPeakHeight)
+export(fdrEnrichedCounts, gridCoverage, plotChrRegions, coverageDiff, rowLogRegLRT, plotminHeight)
 
 exportClasses("cmdsFit","gridCover")

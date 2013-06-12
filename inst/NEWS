@@ -1,3 +1,6 @@
+Version 1.7.1
+- Added findPeakHeight function to estimate optimal minHeight value based on False Discovery Rate for using in enrichedPeaks
+
 Version 1.5.1
 - Fixed bug in enrichedRegions method for RangedDataList objects
 
