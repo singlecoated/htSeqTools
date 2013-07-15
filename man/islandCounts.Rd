@@ -41,7 +41,7 @@ islandCounts(x, minReads=10, mc.cores=1)
   \item{minReads}{Only regions with coverage above \code{minReads} are
     considered.}
   \item{mc.cores}{If \code{mc.cores>1} computations are performed in
-    parallel, using function \code{mclapply} from package \code{multicore}.}
+    parallel, using function \code{mclapply} from package \code{parallel}.}
 }
 \value{
   Object of class \code{RangedData}

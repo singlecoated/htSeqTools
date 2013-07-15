@@ -4,13 +4,13 @@ sample<-lapply(sample, function(x) x[unique(as.character(space(x)))])
   chrNames<-unique(unlist(lapply(sample, names)))
 
   chrLengths<-lapply(sample, function(x){
-		if (mc.cores>1) require(multicore)
+		if (mc.cores>1) require(parallel)
 	   	if(mc.cores>1) {
-		        if ('multicore' %in% loadedNamespaces()) {
-				len<-unlist(multicore::mclapply(as.list(x), function(y) max(end(ranges(y))), mc.cores=mc.cores, mc.preschedule=FALSE))
+		        if ('parallel' %in% loadedNamespaces()) {
+				len<-unlist(parallel::mclapply(as.list(x), function(y) max(end(ranges(y))), mc.cores=mc.cores, mc.preschedule=FALSE))
 				names(len)<-names(x)
 				len
-			} else stop('multicore library has not been loaded!')
+			} else stop('parallel library has not been loaded!')
 		} else {
 				len<-unlist(lapply(x, function(y) max(end(ranges(y)))))
 				names(len)<-names(x)
@@ -155,11 +155,11 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, n
 
 
   generateCounts<-function(sample, mc.cores){
-   if (mc.cores>1) require(multicore)
+   if (mc.cores>1) require(parallel)
    if(mc.cores>1) {
-     if ('multicore' %in% loadedNamespaces()) {
-       cove<-multicore::mclapply(as.list(ranges(sample)), coverage, mc.cores=mc.cores, mc.preschedule=FALSE)
-     } else stop('multicore library has not been loaded!')
+     if ('parallel' %in% loadedNamespaces()) {
+       cove<-parallel::mclapply(as.list(ranges(sample)), coverage, mc.cores=mc.cores, mc.preschedule=FALSE)
+     } else stop('parallel library has not been loaded!')
      #if (!mk.plot) cat("Done with coverage. ")
    } else {
      cove<-coverage(ranges(sample))
@@ -193,10 +193,10 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, n
 	#totReads<-sum(unlist(chrReads))
 	totReads<-nrow(x)
 	chrReads<-totReads*(chrLen/sum(as.numeric(chrLen)))
-        if (mc.cores>1) require(multicore)
+        if (mc.cores>1) require(parallel)
         if(mc.cores>1) {
-          if ('multicore' %in% loadedNamespaces()) {
-            rangesl<-multicore::mclapply(1:length(chrReads), function(i) {
+          if ('parallel' %in% loadedNamespaces()) {
+            rangesl<-parallel::mclapply(1:length(chrReads), function(i) {
                 reads<-sample.int(chrLen[i], as.integer(chrReads[i]), replace=T)
 		len<-floor(mean(width(x[1:min(nrow(x), 10000, chrLen[i]),])))
                 ranges<-IRanges(start=reads, width=rep(len, length(reads)))

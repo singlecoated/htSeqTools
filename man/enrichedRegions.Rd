@@ -94,7 +94,7 @@ mc.cores=1)
     \code{IRangesList} objects. Whenever possible the \code{mclapply}
     function is used, therefore exactly \code{mc.cores} are used. For
     some signatures \code{mclapply} cannot be used, in which case the \code{parallel} function from package
-    \code{multicore} is used. Note: the latter option launches as many parallel
+    \code{parallel} is used. Note: the latter option launches as many parallel
     processes as there are elements in \code{x}, which can place strong
     demands on the processor and memory.}
 }

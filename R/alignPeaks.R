@@ -1,7 +1,7 @@
 setMethod("alignPeaks",signature(x='RangedDataList', strand='character'),
   function(x, strand, npeaks=1000, bandwidth=150, mc.cores=1) {
     x <- as.list(x)
-    ans <- multicore::mclapply(x, FUN=function(z) alignPeaks(z, strand=strand, npeaks=npeaks, bandwidth=bandwidth), mc.cores=mc.cores, mc.preschedule=FALSE)
+    ans <- parallel::mclapply(x, FUN=function(z) alignPeaks(z, strand=strand, npeaks=npeaks, bandwidth=bandwidth), mc.cores=mc.cores, mc.preschedule=FALSE)
     ans <- RangedDataList(ans)
     names(ans) <- names(x)
     return(ans)

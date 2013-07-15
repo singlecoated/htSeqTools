@@ -50,9 +50,9 @@ setMethod(islandCounts, signature=(x='RangedDataList'), function(x, minReads=10,
   x <- lapply(x,function(z) RangedData(ranges(z)[alln]))  #sort by chromosome name           
   #Overall coverage
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
-      cov1 <- multicore::mclapply(as.list(x), coverage, mc.cores=mc.cores, mc.preschedule=FALSE)
-    } else stop('multicore library has not been loaded!')
+    if ('parallel' %in% loadedNamespaces()) {
+      cov1 <- parallel::mclapply(as.list(x), coverage, mc.cores=mc.cores, mc.preschedule=FALSE)
+    } else stop('parallel library has not been loaded!')
   } else {
     cov1 <- lapply(as.list(x), coverage)
   }
@@ -60,9 +60,9 @@ setMethod(islandCounts, signature=(x='RangedDataList'), function(x, minReads=10,
   l <- tapply(unlist(l), INDEX=unlist(sapply(l,names)), FUN=max) #max chr lengths
   l <- l[alln]
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
-      cov1 <- multicore::mclapply(cov1, fillRleList, l=l, mc.cores=mc.cores, mc.preschedule=FALSE)
-    } else stop('multicore library has not been loaded!')
+    if ('parallel' %in% loadedNamespaces()) {
+      cov1 <- parallel::mclapply(cov1, fillRleList, l=l, mc.cores=mc.cores, mc.preschedule=FALSE)
+    } else stop('parallel library has not been loaded!')
   } else cov1 <- lapply(cov1, fillRleList, l=l)
   txt <- paste(paste('cov1[[',1:length(cov1),']]',sep=''),collapse='+')
   cov1 <- eval(parse(text=txt))
@@ -72,9 +72,9 @@ setMethod(islandCounts, signature=(x='RangedDataList'), function(x, minReads=10,
   #Count nb reads in each island
   if (nrow(islands1)>0) {
     if (mc.cores>1) {
-      if ('multicore' %in% loadedNamespaces()) {
-        counts <- multicore::mclapply(as.list(x),function(z) countOverlaps(query=islands1,subject=z,minoverlap=1,type='any'), mc.cores=mc.cores, mc.preschedule=FALSE)
-      } else stop('multicore library has not been loaded!')
+      if ('parallel' %in% loadedNamespaces()) {
+        counts <- parallel::mclapply(as.list(x),function(z) countOverlaps(query=islands1,subject=z,minoverlap=1,type='any'), mc.cores=mc.cores, mc.preschedule=FALSE)
+      } else stop('parallel library has not been loaded!')
     } else {
       counts <- lapply(x,function(z) countOverlaps(islands1,z,minoverlap=1,type='any'))
     }

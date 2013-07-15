@@ -54,7 +54,7 @@ but many functions are also useful for other kinds of sequencing experiments.
 
 Many routines allow performing computations in parallel 
 by specifying an argument \texttt{mc.cores}, which uses
-package \texttt{multicore}.
+package \texttt{parallel}.
 As this package is not available in all platforms,
 in this manual we do not use parallel computing.
 Please see the help page for each function for more details.

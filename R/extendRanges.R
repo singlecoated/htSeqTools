@@ -21,9 +21,9 @@ setMethod("extendRanges",signature(x='RangedDataList'),
   function(x,seqLen=200,chrlength,mc.cores=1) {
     x <- as.list(x)
     if (mc.cores>1) {
-      if ('multicore' %in% loadedNamespaces()) {
-        ans <- multicore::mclapply(x, function(z) extendRanges(z, seqLen=seqLen, chrlength=chrlength), mc.cores=mc.cores, mc.preschedule=FALSE)
-      } else stop('multicore library has not been loaded!')
+      if ('parallel' %in% loadedNamespaces()) {
+        ans <- parallel::mclapply(x, function(z) extendRanges(z, seqLen=seqLen, chrlength=chrlength), mc.cores=mc.cores, mc.preschedule=FALSE)
+      } else stop('parallel library has not been loaded!')
     } else ans <- lapply(x, function(z) extendRanges(z, seqLen=seqLen, chrlength=chrlength))
     ans <- RangedDataList(ans)
     return(ans)

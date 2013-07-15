@@ -14,9 +14,9 @@ function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
     return(ans)
   }
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
+    if ('parallel' %in% loadedNamespaces()) {
       ans <- pvec(1:length(n), f, mc.cores=mc.cores)
-    } else stop('multicore library has not been loaded!')
+    } else stop('parallel library has not been loaded!')
   } else {
     ans <- f(1:length(n))
   }
@@ -61,9 +61,9 @@ function(regions, sample1, sample2, minHeight=100, space, mc.cores=1) {
     return(ans)
   }
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
+    if ('parallel' %in% loadedNamespaces()) {
        ans <- pvec(1:length(n), f, mc.cores=mc.cores)
-    } else stop('multicore library has not been loaded!')
+    } else stop('parallel library has not been loaded!')
   } else {
     ans <- f(1:length(n))
   }

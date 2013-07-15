@@ -68,7 +68,7 @@ enrichedPeaks(regions, sample1, sample2, minHeight=100, space, mc.cores=1)
   \item{mc.cores}{If \code{mc.cores}>1 computations for each element in the
     \code{IRangesList} objects are performed in parallel (using
   the \code{parallel} function from package
-  \code{multicore}). Notice: this option launches as many parallel
+  \code{parallel}). Notice: this option launches as many parallel
   processes as there are elements in \code{x}, which can place strong
   demands on the processor and memory.}
 }

@@ -66,7 +66,7 @@ of 25 or close is recommended. }
   \item{mc.cores}{If \code{mc.cores}>1 computations for each element in the
     \code{IRangesList} objects are performed in parallel (using
   the \code{parallel} function from package
-  \code{multicore}). Notice: this option launches as many parallel
+  \code{parallel}). Notice: this option launches as many parallel
   processes as there are elements in \code{x}, which can place strong
   demands on the processor and memory.}
 \item{x}{An object of class \code{list} as returned by the call to \code{findPeakHeight}.}

@@ -11,9 +11,9 @@ setMethod("ssdCoverage", signature(x='RangedData'), function(x, mc.cores=1) { ss
 
 setMethod("ssdCoverage", signature(x='RangedDataList'), function(x, mc.cores=1) {
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
-      ans <- multicore::mclapply(as.list(x), ssdCoverage, mc.cores=mc.cores, mc.preschedule=FALSE)
-    } else stop('multicore library has not been loaded!')
+    if ('parallel' %in% loadedNamespaces()) {
+      ans <- parallel::mclapply(as.list(x), ssdCoverage, mc.cores=mc.cores, mc.preschedule=FALSE)
+    } else stop('parallel library has not been loaded!')
   } else {
     ans <- lapply(x, ssdCoverage)
   }

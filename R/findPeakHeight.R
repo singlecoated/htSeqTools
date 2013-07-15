@@ -27,9 +27,9 @@ function(regions, sample1, sample2, hmin=5, hmax=200, myfdr=0.01, gridSize=25, s
   }
   cat('\nEstimating peak calling threshold for FDR',myfdr,'...\n')
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
+    if ('parallel' %in% loadedNamespaces()) {
       fdr <- pvec(1:length(n), f, mc.cores=mc.cores)
-    } else stop('multicore library has not been loaded!')
+    } else stop('parallel library has not been loaded!')
   } else {
     fdr <- f(1:length(n))
   }

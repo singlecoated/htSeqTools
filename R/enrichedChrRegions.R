@@ -150,10 +150,10 @@ meanRandomHits <- function(nSims=10, cutseq, nhits, chrLength, windowSize=10^4-1
   # - mc.cores: number of cores to be used for parallel computation. Passed on to mclapply
   # Output: named vector with expected number of regions witih smoothed hit count above specified thresholds
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
-      rhits <- multicore::mclapply(as.list(1:nSims), function(z) randomHitsWindow(nhits=nhits, chrLength=chrLength, windowSize=windowSize), mc.cores=mc.cores, mc.preschedule=FALSE)
-      rhits <- matrix(unlist(multicore::mclapply(rhits, hitsPerCut, cutseq=cutseq, mc.cores=mc.cores, mc.preschedule=FALSE)),nrow=length(cutseq))
-    } else stop('multicore library has not been loaded!')
+    if ('parallel' %in% loadedNamespaces()) {
+      rhits <- parallel::mclapply(as.list(1:nSims), function(z) randomHitsWindow(nhits=nhits, chrLength=chrLength, windowSize=windowSize), mc.cores=mc.cores, mc.preschedule=FALSE)
+      rhits <- matrix(unlist(parallel::mclapply(rhits, hitsPerCut, cutseq=cutseq, mc.cores=mc.cores, mc.preschedule=FALSE)),nrow=length(cutseq))
+    } else stop('parallel library has not been loaded!')
   } else {
     rhits <- lapply(as.list(1:nSims), function(z) randomHitsWindow(nhits=nhits, chrLength=chrLength, windowSize=windowSize))
     rhits <- matrix(unlist(lapply(rhits, hitsPerCut, cutseq=cutseq)),nrow=length(cutseq))

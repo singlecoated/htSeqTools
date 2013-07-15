@@ -15,10 +15,10 @@ setMethod("cmdsFit", signature=c(d='matrix'), function(d,k=2,type='classic',add=
 setMethod("cmds", signature(x='RangedDataList'), function(x, k=2, logscale=TRUE, mc.cores=1, cor.method='pearson') {
   cat('Computing coverage...\n')
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
-      cover <- multicore::mclapply(as.list(x), coverage, mc.cores=mc.cores, mc.preschedule=FALSE)
-      if (logscale) cover <- multicore::mclapply(cover, function(z) log(z+1), mc.cores=mc.cores, mc.preschedule=FALSE)
-    } else stop('multicore library has not been loaded!')
+    if ('parallel' %in% loadedNamespaces()) {
+      cover <- parallel::mclapply(as.list(x), coverage, mc.cores=mc.cores, mc.preschedule=FALSE)
+      if (logscale) cover <- parallel::mclapply(cover, function(z) log(z+1), mc.cores=mc.cores, mc.preschedule=FALSE)
+    } else stop('parallel library has not been loaded!')
   } else {
     cover <- lapply(x, coverage)
     if (logscale) cover <- lapply(cover, function(z) log(z+1))
@@ -31,7 +31,7 @@ setMethod("cmds", signature(x='RangedDataList'), function(x, k=2, logscale=TRUE,
   index <- index[index[,1]<index[,2],]
   index <- as.list(data.frame(t(index)))
   if (mc.cores>1) {
-    d <- multicore::mclapply(index, function(z) corRleList(cover[[z[1]]], cover[[z[2]]], cor.method=cor.method), mc.cores=mc.cores, mc.preschedule=FALSE)
+    d <- parallel::mclapply(index, function(z) corRleList(cover[[z[1]]], cover[[z[2]]], cor.method=cor.method), mc.cores=mc.cores, mc.preschedule=FALSE)
   } else {
     d <- lapply(index, function(z) corRleList(cover[[z[1]]], cover[[z[2]]], cor.method=cor.method))
   }

@@ -1,13 +1,13 @@
 setMethod(countRepeats, signature(reads='RangedData'), function(reads,mc.cores=1) {
   if (mc.cores>1) {
-    if ('multicore' %in% loadedNamespaces()) {
+    if ('parallel' %in% loadedNamespaces()) {
       myfun <- function(idx) {
         ans <- vector('list',length(idx))
         for (i in 1:length(idx)) ans[[i]] <- countRepeats(ranges(reads)[[idx[i]]])
         return(ans)
       }
-      ans <- multicore::pvec(1:length(reads),myfun,mc.cores=ifelse(length(reads)<=mc.cores,round(length(reads)/2),mc.cores))
-    } else stop('multicore library has not been loaded!')
+      ans <- parallel::pvec(1:length(reads),myfun,mc.cores=ifelse(length(reads)<=mc.cores,round(length(reads)/2),mc.cores))
+    } else stop('parallel library has not been loaded!')
   } else {
     ans <- lapply(as.list(ranges(reads)),function(x) countRepeats(x))
   }
@@ -22,7 +22,7 @@ setMethod(countRepeats, signature(reads='IRangesList'), function(reads,mc.cores=
       for (i in 1:length(idx)) ans[[i]] <- countRepeats(as.list(reads)[[idx[i]]])
       return(ans)
     }
-    ans <- multicore::pvec(1:length(reads),myfun,mc.cores=ifelse(length(reads)<=mc.cores,length(reads)/2,mc.cores))
+    ans <- parallel::pvec(1:length(reads),myfun,mc.cores=ifelse(length(reads)<=mc.cores,length(reads)/2,mc.cores))
   } else {
     ans <- lapply(as.list(reads),countRepeats)
   }
