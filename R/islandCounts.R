@@ -82,7 +82,9 @@ setMethod(islandCounts, signature=(x='RangedDataList'), function(x, minReads=10,
   } else {
     counts <- matrix(nrow=0,ncol=length(x))
   }
-  ans <- RangedData(ranges=ranges(islands1), values=counts)
+  rownames(counts) <- NULL
+  ans <- RangedData(ranges=ranges(islands1),values=as.data.frame(counts))
+  # ans <- RangedData(ranges=ranges(islands1), values=counts)
   if (!is.null(names(x))) colnames(values(ans)) <- names(x) else colnames(values(ans)) <- paste('counts',1:length(x),sep='')
   return(ans)
 }
