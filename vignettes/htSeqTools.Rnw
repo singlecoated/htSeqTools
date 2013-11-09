@@ -405,7 +405,7 @@ we plot the coverage in a certain genomic region before the adjustment
 
 <<label=figpreprocess1,include=FALSE>>=
 covbefore <- coverage(htSample[['ipBatch2']])
-covbefore <- seqselect(covbefore[['chr2L']],295108,297413)
+covbefore <- window(covbefore[['chr2L']],295108,297413)
 plot(as.integer(covbefore),type='l',ylab='Coverage')
 @
 
@@ -426,11 +426,11 @@ as illustrated by the left-most peak in Figure \ref{fig:preprocess1}.
 <<preprocess1>>=
 ip2Aligned <- alignPeaks(htSample[['ipBatch2']],strand='strand', npeaks=100)
 covafter <- coverage(ip2Aligned)
-covafter <- seqselect(covafter[['chr2L']],295108,297413)
+covafter <- window(covafter[['chr2L']],295108,297413)
 covplus <- coverage(htSample[['ipBatch2']][htSample[['ipBatch2']][['strand']]=='+',])
-covplus <- seqselect(covplus[['chr2L']],295108,297413)
+covplus <- window(covplus[['chr2L']],295108,297413)
 covminus <- coverage(htSample[['ipBatch2']][htSample[['ipBatch2']][['strand']]=='-',])
-covminus <- seqselect(covminus[['chr2L']],295108,297413)
+covminus <- window(covminus[['chr2L']],295108,297413)
 @
 
 <<label=figpreprocess2,include=FALSE>>=

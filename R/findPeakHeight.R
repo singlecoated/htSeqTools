@@ -74,9 +74,9 @@ function(regions, sample1, sample2, hmin=5, hmax=200, myfdr=0.01, gridSize=25, s
     {
       m1 <- length(cov1); m2 <- length(cov2)
       if (m1<m2) {
-        cov1 <- c(cov1-seqselect(cov2,start=1,end=m1),seqselect(cov2,start=m1+1,end=m2))
+        cov1 <- c(cov1-window(cov2,start=1,end=m1),window(cov2,start=m1+1,end=m2))
       } else {
-        cov1 <- c(seqselect(cov1,start=1,end=m2)-cov2,seqselect(cov1,start=m2+1,end=m1))
+        cov1 <- c(window(cov1,start=1,end=m2)-cov2,window(cov1,start=m2+1,end=m1))
       }
       islands1 <- slice(cov1, lower=minHeight)
       m <- viewMaxs(islands1)
