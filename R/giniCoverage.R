@@ -55,7 +55,6 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, n
 
 setMethod("giniCoverage", signature(sample='RangedDataList', species='character', chrLengths='missing'),
 function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, numSim=1) {
-	require(BSgenome)
 	if(!(species %in% available.genomes())){ stop('\'species\' must be a valid BSgenome character string')}
 	else library(species, character.only=T, logical.return=T)
 	simpleSp<-sub("BSgenome.", "", species)
@@ -89,7 +88,6 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1
 
 setMethod("giniCoverage", signature(sample='RangedData', species='character', chrLengths='missing'),
 function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, numSim=1) {
-    require(BSgenome)
     if(!(species %in% available.genomes())){ stop('\'species\' must be a valid BSgenome character string')}
     else library(species, character.only=T, logical.return=T)
     simpleSp<-sub("BSgenome.", "", species)
