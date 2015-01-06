@@ -3,14 +3,15 @@ function(sample1, sample2, regions, minReads=10, mappedreads, pvalFilter=0.05, e
   counts <- regions[names(regions)[lapply(ranges(regions),length)>0]]
   if (nrow(counts)>1) {
     #LR test
-    countsGroup <- as.data.frame(as(values(counts),"DataFrame"))[,,drop=FALSE]
+    countsDF <- unlist(values(counts), use.names=FALSE)
+    countsGroup <- as.matrix(countsDF)
     lrt <- rowLogRegLRT(counts=countsGroup, exact=exact, p.adjust.method=p.adjust.method)
     lrt$pvals[is.na(lrt$pvals)] <- 1 #NAs happen when counts in all samples are 0
     sel <- lrt$pvals<=pvalFilter
-    counts[['pvalue']] <- lrt$pvals
+    countsDF[['pvalue']] <- lrt$pvals
     rpkm <- countsGroup / ((as.matrix(width(counts))/10^9) %*% t(as.matrix(mappedreads)))
-    names(rpkm) <- paste('rpkm',names(rpkm),sep='.')
-    values(counts) <- DataFrame(values(counts), rpkm)
+    colnames(rpkm) <- paste('rpkm',colnames(rpkm),sep='.')
+    values(counts) <- DataFrame(countsDF, rpkm)
     ans <- counts[sel,]
   } else {
     ans <- RangedData(IRanges(integer(0),integer(0)),space=character(0))

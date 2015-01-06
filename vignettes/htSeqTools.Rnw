@@ -578,7 +578,7 @@ For computational speed here we only use \texttt{nSims=1} simulations to estimat
 chrLength <- 500000
 names(chrLength) <- c('chr2L')
 chrregions <- enrichedChrRegions(peaks, chrLength=chrLength, windowSize=10^4-1, fdr=0.05, nSims=1)
-chrregions[['chr2L']]
+chrregions
 @ 
 
 \normalsize
