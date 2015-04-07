@@ -27,7 +27,7 @@ setMethod("lines", signature(x="gridCover"), function(x, ...) {
 
 ########## SUBSETTING ##########
 
-setMethod("[", signature(x="gridCover"), function(x, i, j, ..., drop=FALSE) {
+setMethod("[",signature(x="gridCover"), function(x, i, j, ..., drop=FALSE) {
   x@cover <- x@cover[i,,drop=FALSE]
   x@viewsInfo <- x@viewsInfo[i,,drop=FALSE]
   return(x)
