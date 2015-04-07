@@ -56,7 +56,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, n
 setMethod("giniCoverage", signature(sample='RangedDataList', species='character', chrLengths='missing'),
 function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, numSim=1) {
 	if(!(species %in% available.genomes())){ stop('\'species\' must be a valid BSgenome character string')}
-	else library(species, character.only=T, logical.return=T)
+	else library(species, character.only=TRUE, logical.return=TRUE)
 	simpleSp<-sub("BSgenome.", "", species)
 	simpleSp<-sub('.UCSC.+', "", simpleSp)
 	chrLengths<-seqlengths(get(simpleSp))
@@ -89,7 +89,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths=1
 setMethod("giniCoverage", signature(sample='RangedData', species='character', chrLengths='missing'),
 function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species="", chrLengths, numSim=1) {
     if(!(species %in% available.genomes())){ stop('\'species\' must be a valid BSgenome character string')}
-    else library(species, character.only=T, logical.return=T)
+    else library(species, character.only=TRUE, logical.return=TRUE)
     simpleSp<-sub("BSgenome.", "", species)
     simpleSp<-sub('.UCSC.+', "", simpleSp)
     chrLengths<-seqlengths(get(simpleSp))

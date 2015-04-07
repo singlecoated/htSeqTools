@@ -3,6 +3,8 @@
 \docType{class}
 \alias{gridCover-class}
 \alias{[,gridCover-method}
+\alias{[,gridCover-method,ANY-method}
+\alias{[,gridCover-method,ANY-method,ANY-method}
 \alias{lines,gridCover-method}
 \alias{plot,gridCover,ANY-method}
 \alias{show,gridCover-method}
