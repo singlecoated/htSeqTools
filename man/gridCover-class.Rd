@@ -2,9 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{gridCover-class}
-\alias{[,gridCover-method}
-\alias{[,gridCover-method,ANY-method,ANY-method}
-\alias{[,gridCover,ANY,ANY}
 \alias{lines,gridCover-method}
 \alias{plot,gridCover,ANY-method}
 \alias{show,gridCover-method}
@@ -35,8 +32,6 @@ Objects of this class are returned by call to the function \code{gridCoverage}.
 }
 \section{Methods}{
   \describe{
-    \item{[}{\code{signature(x = "gridCover", i = "ANY", j = "ANY")}:
-      Select a subset of peaks. }
     \item{plot}{\code{signature(x = "gridCover", y = "ANY")}: Plot the coverage. }
     \item{lines}{\code{signature(x = "gridCover")}: Add lines to an
       existing plot. }
