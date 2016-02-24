@@ -141,8 +141,7 @@ function(sample, mc.cores=1, mk.plot=FALSE, seqName="", species, chrLengths=1, n
   sortFun <- function(x, decreasing = FALSE, na.last = NA, ...)
           {
               ord <- order(runValue(x))	
-              Rle(values = runValue(x)[ord], lengths = runLength(x)[ord],
-                  check = FALSE)
+              Rle(values = runValue(x)[ord], lengths = runLength(x)[ord])
           }
 
 
