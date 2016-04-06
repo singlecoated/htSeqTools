@@ -72,7 +72,7 @@ sapply(htSample,nrow)
 @ 
 \normalsize
 
-\texttt{htSample} is a \texttt{RangedDataList} object storing the chromosome, start and end
+\texttt{htSample} is a \texttt{GRangesList} object storing the chromosome, start and end
 positions for reads mapped to the first 500kb of the drosophila melanogaster chromosome 2L.
 \texttt{htSample} contains 2 immuno-precipitated and 2 control input samples
 obtained in two separate Illumina sequencing runs, which we named Batch1 and Batch2.
@@ -82,26 +82,26 @@ only uniquely mapping reads with at most 2 mismatches in the first 28 bases were
 We do not give any further details about the experiment, as the results
 have not yet been published.
 
-You can easily build a \texttt{RangedDataList} to store multiple \texttt{RangedData}
+You can easily build a \texttt{GRangesList} to store multiple \texttt{GRanges}
 objects (coming from different BED files read as data frames for
 instance). We will extract two elements from htSample
 in order to simulate a batch of 2 externally loaded samples. Ctrl and
-IP1 will be two data frames with 'space', 'start', 'end', 'width', and
-'strand' columns. Please note that 'space', 'start' and 'end' are necessary in order to directly generate a \texttt{RangedData}
-object from a data frame. The 'width' column will not be
-present in the output by default, and all other columns will be added to the
-\texttt{RangedData} object as additional value columns ('strand' in
-our case).
+IP1 will be two data frames with 'seqnames', 'start', 'end', 'width',
+and 'strand' columns. Please note that only 'seqnames', 'start' and 'end' are
+necessary in order to directly generate a \texttt{GRanges} object from a data
+frame. The 'width' and 'strand' column are optional and any additional column
+will be added to the \texttt{GRanges} object as a metadata column.
 
 \footnotesize
 <<import2>>=
 Ctrl=as.data.frame(htSample[[1]])
 IP1=as.data.frame(htSample[[2]])
 head(Ctrl)
-head(RangedData(Ctrl))
-htSample2 <- RangedDataList(Ctrl=RangedData(Ctrl),IP1=RangedData(IP1))
+makeGRangesFromDataFrame(Ctrl)
+htSample2 <- GRangesList(Ctrl=makeGRangesFromDataFrame(Ctrl),
+                         IP1=makeGRangesFromDataFrame(IP1))
 htSample2
-head(htSample2[['Ctrl']])
+htSample2[['Ctrl']]
 @ 
 \normalsize
 
@@ -145,7 +145,8 @@ very similar results.
 MDS is then used to plot the samples in a low-dimensional space,
 in a way such that the Euclidean distance between two points is closest
 to the Pearson distances.
-Our approach is implemented in a \texttt{cmds} method for \texttt{RangedDataList} objects.
+Our approach is implemented in a \texttt{cmds} method for \texttt{GRangesList}
+objects.
 We illustrate its use by obtaining a two-dimensional MDS
 for our sample data.
 
@@ -304,8 +305,8 @@ the function \texttt{tabDuplReads}.
 \footnotesize
 
 <<qcontrol2>>=
-contamSample <- RangedData(IRanges(rep(1,200),rep(36,200)),space=rep('chr2L',200),strand='+')
-contamSample <- rbind(htSample[['ctrlBatch1']],contamSample)
+contamSample <- GRanges('chr2L',IRanges(rep(1,200),rep(36,200)),strand='+')
+contamSample <- c(htSample[['ctrlBatch1']],contamSample)
 nrepeats <- tabDuplReads(contamSample)
 nrepeats
 @ 
@@ -427,9 +428,9 @@ as illustrated by the left-most peak in Figure \ref{fig:preprocess1}.
 ip2Aligned <- alignPeaks(htSample[['ipBatch2']],strand='strand', npeaks=100)
 covafter <- coverage(ip2Aligned)
 covafter <- window(covafter[['chr2L']],295108,297413)
-covplus <- coverage(htSample[['ipBatch2']][htSample[['ipBatch2']][['strand']]=='+',])
+covplus <- coverage(htSample[['ipBatch2']][strand(htSample[['ipBatch2']])=='+'])
 covplus <- window(covplus[['chr2L']],295108,297413)
-covminus <- coverage(htSample[['ipBatch2']][htSample[['ipBatch2']][['strand']]=='-',])
+covminus <- coverage(htSample[['ipBatch2']][strand(htSample[['ipBatch2']])=='-'])
 covminus <- window(covminus[['chr2L']],295108,297413)
 @
 
@@ -479,9 +480,9 @@ and obtain the number of reads in each sample overlapping with these regions.
 \footnotesize
 
 <<islandCounts>>=
-ip <- rbind(htSample[[2]],htSample[[4]])
-ctrl <- rbind(htSample[[1]],htSample[[3]])
-pool <- RangedDataList(ip=ip, ctrl=ctrl)
+ip <- c(htSample[[2]],htSample[[4]])
+ctrl <- c(htSample[[1]],htSample[[3]])
+pool <- GRangesList(ip=ip, ctrl=ctrl)
 counts <- islandCounts(pool,minReads=10)
 head(counts)
 @ 
@@ -583,7 +584,7 @@ chrregions
 
 \normalsize
 
-\texttt{enrichedChrRegions} returns a \texttt{RangedData} 
+\texttt{enrichedChrRegions} returns a \texttt{GRanges} 
 which for our sample data is empty, suggesting that there is no region with
 an unusually high density of enriched regions.
 Two related functions are \texttt{countHitsWindow} which computes the moving average of the
@@ -594,7 +595,7 @@ and plot them.
 \footnotesize
 
 <<label=figanalysis2,include=FALSE>>=
-chrregions <- RangedData(ranges=IRanges(start=c(100000,200000),end=c(100100,210000)),space=c('chr2L','chr2R'))
+chrregions <- GRanges(c('chr2L','chr2R'), IRanges(start=c(100000,200000),end=c(100100,210000)))
 plotChrRegions(regions=chrregions, chrLength=c(chr2L=500000,chr2R=500000))
 @ 
 
@@ -640,10 +641,10 @@ and \texttt{stdPeakLocation}).
 <<label=figplots1,include=FALSE>>=
 set.seed(1)
 peaksanno <- peaks
-peaksanno[['start_position']] <- start(peaksanno) + runif(nrow(peaksanno),-500,1000)
-peaksanno[['end_position']] <- peaksanno[['start_position']] + 500
-peaksanno[['distance']] <- peaksanno[['start_position']] - start(peaksanno)
-peaksanno[['strand']] <- sample(c('+','-'),nrow(peaksanno),replace=TRUE)
+mcols(peaksanno)$start_position <- start(peaksanno) + runif(length(peaksanno),-500,1000)
+mcols(peaksanno)$end_position <- mcols(peaksanno)$start_position + 500
+mcols(peaksanno)$distance <- mcols(peaksanno)$start_position - start(peaksanno)
+strand(peaksanno) <- sample(c('+','-'),length(peaksanno),replace=TRUE)
 PeakLocation(peaksanno,peakDistance=1000)
 @ 
 
@@ -680,7 +681,7 @@ coverage, which can be accesed with the method \texttt{getViewsInfo}.
 
 <<regionscov>>=
 cover <- coverage(ip)
-rcov <- regionsCoverage(space(regions),start(regions),end(regions),cover=cover)
+rcov <- regionsCoverage(seqnames(regions),start(regions),end(regions),cover=cover)
 names(rcov)
 rcov[['views']]
 gridcov <- gridCoverage(rcov)
@@ -699,7 +700,7 @@ which suggests the use of some clustering technique to find subgroups of regions
 <<label=figregCoverage,include=FALSE>>=
 ylim <- c(0,max(getViewsInfo(gridcov)[['maxCov']]))
 plot(gridcov, ylim=ylim,lwd=2)
-for (i in 1:nrow(regions)) lines(getCover(gridcov)[i,], col='gray', lty=2)
+for (i in seq_along(regions)) lines(getCover(gridcov)[i,], col='gray', lty=2)
 @ 
 
 \normalsize

@@ -1,13 +1,13 @@
 Package: htSeqTools
-Version: 1.17.1
-Date: 2015-04-28
+Version: 1.17.2
+Date: 2016-04-05
 Title: Quality Control, Visualization and Processing for
         High-Throughput Sequencing data
 Author: Evarist Planet, Camille Stephan-Otto, Oscar Reina, Oscar
         Flores, David Rossell
 Maintainer: Oscar Reina <oscar.reina@irbbarcelona.org>
 Depends: R (>= 2.12.2), methods, BiocGenerics (>= 0.1.0), Biobase,
-        IRanges, methods, MASS, BSgenome, GenomeInfoDb (>= 1.1.3),
+        S4Vectors, IRanges, methods, MASS, BSgenome, GenomeInfoDb (>= 1.1.3),
         GenomicRanges (>= 1.17.11)
 Enhances: parallel,multicore
 Description: We provide efficient, easy-to-use tools for

@@ -1,10 +1,10 @@
 \name{enrichedChrRegions}
 \alias{enrichedChrRegions}
 \alias{enrichedChrRegions-methods}
-\alias{enrichedChrRegions,RangedData,missing-method}
-\alias{enrichedChrRegions,RangedData,RangedData-method}
-\alias{enrichedChrRegions,GRanges,GRanges-method}
 \alias{enrichedChrRegions,GRanges,missing-method}
+\alias{enrichedChrRegions,RangedData,missing-method}
+\alias{enrichedChrRegions,GRanges,GRanges-method}
+\alias{enrichedChrRegions,RangedData,RangedData-method}
 \title{
 Find chromosomal regions with a high concentration of hits.
 }
@@ -18,11 +18,13 @@ and selecting regions based on a FDR cutoff.
 \section{Methods}{
 \describe{
 
-\item{\code{signature(hits1 = "RangedData", hits2 = "missing")}}{
+\item{\code{signature(hits1 = "GRanges", hits2 = "missing")},
+      \code{signature(hits1 = "RangedData", hits2 = "missing")}}{
 Look for chromosome zones with a large number of hits reported in \code{hits1}.
 }
 
-\item{\code{signature(hits1 = "RangedData", hits2 = "RangedData")}}{
+\item{\code{signature(hits1 = "GRanges", hits2 = "GRanges")},
+      \code{signature(hits1 = "RangedData", hits2 = "RangedData")}}{
 Look for chromosomal zones with a different density of hits in
 \code{hits1} vs \code{hits2}.
 }
@@ -32,8 +34,8 @@ Look for chromosomal zones with a different density of hits in
 enrichedChrRegions(hits1, hits2, chrLength, windowSize=10^4-1, fdr=0.05, nSims=10, mc.cores=1)
 }
 \arguments{
-  \item{hits1}{Object containing hits (start, end and chromosome). Currently only \code{RangedData}
-    objects are accepted.}
+  \item{hits1}{Object containing hits (chromosome, start, and end).
+    Can be a \code{GRanges} or \code{RangedData} object.}
   \item{hits2}{Optionally, another object containing hits. If specified,
   regions will be defined by comparing hits1 vs hits2.}
   \item{chrLength}{Named vector indicating the length of each chromosome
@@ -46,8 +48,9 @@ enrichedChrRegions(hits1, hits2, chrLength, windowSize=10^4-1, fdr=0.05, nSims=1
     computations (passed on to mclapply)}
 }
 \value{
-  Object of class \code{RangedData} containing regions with smoothed hit
-  count above the specified FDR level.
+  Object of class \code{GRanges} (if input is \code{GRanges}) or
+  \code{RangedData} (if input is \code{RangedData}) containing regions with
+  smoothed hit count above the specified FDR level.
 }
 \details{
 A smoothed number of hits is computed by counting the number of
@@ -91,8 +94,7 @@ set.seed(1)
 st <- round(rnorm(100,500,100))
 st[st>10000] <- 10000
 strand <- rep(c('+','-'),each=50)
-space <- rep('chr1',length(st))
-hits1 <- RangedData(IRanges(st,st+38),strand=strand,space=space)
+hits1 <- GRanges('chr1', IRanges(st,st+38),strand=strand)
 chrLength <- c(chr1=10000)
 enrichedChrRegions(hits1,chrLength=chrLength, windowSize=99, nSims=1)
 }

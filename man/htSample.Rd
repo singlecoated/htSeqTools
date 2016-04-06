@@ -6,7 +6,7 @@ Example ChIP-sequencing data with 2 replicates per group obtained in two
 different dates.
 }
 \description{
-  This \code{RangedDataList} contains a subset of drosophila
+  This \code{GRangesList} contains a subset of drosophila
   melanogaster ChIP-sequencing data
   obtained with the Illumina sequencer.
   An immuno-precipitated and a control input sample were obtained at two
@@ -16,7 +16,7 @@ different dates.
 }
 \usage{data(htSample)}
 \format{
-  \code{RangedDataList} where each element contains reads from a
+  \code{GRangesList} where each element contains reads from a
   different sample.
   \code{names(htSample)} indicate the group and batch (experimental
   date) that each sample corresponds to.

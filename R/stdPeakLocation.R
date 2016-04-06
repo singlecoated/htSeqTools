@@ -14,6 +14,8 @@ function(x, peakDistance=1000, startpos='start_position', endpos='end_position',
 
 dist2midpnt <- function(st,end,startpos,endpos,strand) {
   peakloc <- .5*(st+end)
+  if (is(strand, "Rle"))
+    strand <- S4Vectors:::decodeRle(strand)
   if ((is.character(strand)) | (is.factor(strand))) {
     distance <- ifelse(strand=='+', peakloc - startpos, endpos - peakloc)
   } else if (is.numeric(strand)) {
